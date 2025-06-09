@@ -21,7 +21,14 @@ import { API_KEY } from '../config.js';
     async function getWeather(latitude,longitude){
         const request = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=weather_code&current=temperature_2m&current=relative_humidity_2m`);
         const result = await request.json();
-        return result;
+        const weatherCode = result.results.current.weather_code;
+        const temperature = result.results.current.temperature_2m;
+        const humidity = result.results.current.relative_humidity_2m;
+        return {
+            weatherCode,
+            temperature,
+            humidity
+        };
     }
 
 
