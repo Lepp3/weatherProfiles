@@ -15,7 +15,7 @@ body{
     background-color: #fff;
 }
 
-.card--holder{
+#card--holder{
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
