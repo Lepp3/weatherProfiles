@@ -29,6 +29,30 @@ const codesMap = {
     '99': 'Thunderstorm with Heavy Hail',
 }
 
-export function getWeatherDescription(code) {
+function getWeatherDescription(code) {
     return codesMap[code] || 'Unknown Weather Code';
 }
+
+function extractLocationInfo(location) {
+    const streetName = location.street.name;
+    const streetNumber = location.street.number;
+    const zipcode = location.postcode;
+    const city = location.city;
+    const country = location.country;
+    return [streetName, streetNumber, zipcode, city, country];
+}
+
+function extractLatAndLong(annotations){
+    const latitude = annotations.DMS.lat.split(' ')[2].slice(0,5);
+    const longitude = annotations.DMS.lng.split(' ')[2].slice(0,5);
+    return [latitude, longitude];
+}
+
+
+
+export default {
+    getWeatherDescription,
+    extractLocationInfo,
+    extractLatAndLong,
+    makeLocalStorageLocationKey
+};
