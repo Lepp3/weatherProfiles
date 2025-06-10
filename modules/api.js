@@ -1,4 +1,5 @@
 import { API_KEY } from '../config.js';
+import utils from './utils.js';
 
 
 
@@ -12,7 +13,7 @@ import { API_KEY } from '../config.js';
     async function getGeoInformation(streetName,streetNumber,zipcode,city,country){
         const request = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${streetName}+${streetNumber}%2C+${zipcode}+${city}%2C+${country}&key=${API_KEY}`);
         const result = await request.json();
-
+        const [latitude,longitude] = utils.extractLatAndLong(result.results[0].annotations);
         return result;
 
     };

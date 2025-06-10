@@ -1,11 +1,10 @@
 import dom from "./modules/dom.js";
 
-window.addEventListener("load", () => {
-  dom.loadFiveUsers();
-});
+
 
 const newUserButton = document.getElementById("refresh-users");
 newUserButton.addEventListener("click", () => {
+  localStorage.clear();
   dom.loadFiveUsers();
 });
 
@@ -26,3 +25,5 @@ setInterval(async () => {
     console.error("Weather update failed:", err);
   } finally {
     isUpdating = false;}}, 600000)
+
+    dom.loadFiveUsers();

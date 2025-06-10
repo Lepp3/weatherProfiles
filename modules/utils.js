@@ -54,5 +54,5 @@ export default {
     getWeatherDescription,
     extractLocationInfo,
     extractLatAndLong,
-    makeLocalStorageLocationKey
+    
 };

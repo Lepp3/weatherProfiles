@@ -3,26 +3,30 @@ import api from "./api.js";
 import utils from "./utils.js";
 
 async function loadFiveUsers() {
-  localStorage.clear();
   const contentHolder = document.getElementById("card--holder");
   const loader = document.getElementById("loader");
-
   contentHolder.style.display = "none";
   loader.style.display = "block";
 
-  try{
-    const result = await api.getFiveUsers();
-    let users = result?.results;
+  let cachedData = JSON.parse(localStorage.getItem("users"));
+    if(cachedData && cachedData.length > 0){
+        populateUserInfo(cachedData);
+    }else{
+        try{
+            const result = await api.getFiveUsers();
+            let users = result?.results;
 
-  await populateUserInfo(users);
+            await populateUserInfo(users);
 
-  contentHolder.style.display = "flex";
-  loader.style.display = "none";
-  }catch(error){
-    console.error("Error: " + error.message);
-  }
-  
+            contentHolder.style.display = "flex";
+            loader.style.display = "none";
+        }catch(error){
+            console.error("Error: " + error.message);
+        }
+    }
+
 }
+
 
 async function populateUserInfo(users) {
   const cardHolder = document.getElementById("card--holder");
@@ -53,6 +57,10 @@ async function populateUserInfo(users) {
   }
 }
 
+function populateCachedInfo(users){
+    
+}
+
 async function populateWeatherInfo(user) {
   const weatherInfoHolder = document.createElement("div");
   weatherInfoHolder.classList.add("weather-info");
@@ -62,6 +70,7 @@ async function populateWeatherInfo(user) {
   humidityP.classList.add("humidity");
   const conditionP = document.createElement("p");
   conditionP.classList.add("condition");
+  
   const [streetName, streetNumber, zipcode, city, country] = utils.extractLocationInfo(user.location);
   try{
     const geoInfo = await api.getGeoInformation(streetName,streetNumber,zipcode,city,country);
@@ -74,13 +83,13 @@ async function populateWeatherInfo(user) {
   weatherInfoHolder.appendChild(tempP);
   weatherInfoHolder.appendChild(humidityP);
   weatherInfoHolder.appendChild(conditionP);
-  let cachedData = localStorage.getItem("locations");
+  let cachedData = localStorage.getItem("users");
   if (!cachedData){
-    localStorage.setItem("locations", JSON.stringify([{latitude, longitude}]));
+    localStorage.setItem("users", JSON.stringify([{firstName: user.name.first, lastName: user.name.last, city: user.location,city, country: user.location.country ,latitude, longitude, weather: {code: weatherCode, temperature, humidity}}]));
   }else{
     cachedData = JSON.parse(cachedData);
-    cachedData.push({latitude, longitude});
-    localStorage.setItem("locations", JSON.stringify(cachedData));
+    cachedData.push({firstName: user.name.first, lastName: user.name.last, city, country: user.location.country ,latitude, longitude, weather: {code: weatherCode, temperature, humidity}});
+    localStorage.setItem("users", JSON.stringify(cachedData));
   }
   return weatherInfoHolder;
   }catch(error){
@@ -111,6 +120,8 @@ async function updateWeatherData() {
         }
     }
 }
+
+
 
 export default {
   loadFiveUsers,
