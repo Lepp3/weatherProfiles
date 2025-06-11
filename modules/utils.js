@@ -16,7 +16,7 @@ const codesMap = {
     '66': 'Light Freezing Rain',
     '67': 'Heavy Freezing Rain',
     '71': 'Slight Snow Fall',
-    '73': 'Snow Fall',  
+    '73': 'Snow Fall',
     '75': 'Heavy Snow Fall',
     '77': 'Snow Grains',
     '80': 'Slight Rain Showers',
@@ -34,13 +34,13 @@ function getWeatherDescription(code) {
 }
 
 
-function extractLatAndLong(annotations){
-    const latitude = annotations.DMS.lat.split(' ')[2].slice(0,5);
-    const longitude = annotations.DMS.lng.split(' ')[2].slice(0,5);
+function extractLatAndLong(annotations) {
+    const latitude = annotations.DMS.lat.split(' ')[2].slice(0, 5);
+    const longitude = annotations.DMS.lng.split(' ')[2].slice(0, 5);
     return [latitude, longitude];
 }
 
-function composeUserObject(user){
+function composeUserObject(user) {
     let userObj = {
         location: {},
         weather: {},
@@ -56,12 +56,12 @@ function composeUserObject(user){
     return userObj;
 }
 
-function getCachedData(){
+function getCachedData() {
     const cachedData = localStorage.getItem('users');
     return cachedData ? JSON.parse(cachedData) : null;
 }
 
-function setCachedData(userInfo){
+function setCachedData(userInfo) {
     localStorage.setItem('users', JSON.stringify(userInfo));
 }
 
@@ -71,5 +71,5 @@ export default {
     getCachedData,
     setCachedData,
     composeUserObject
-    
+
 };

@@ -1,15 +1,9 @@
-
 import api from "./api.js";
 import utils from "./utils.js";
 
 
 
-
-
-
-
-
-function createUserCard(user){
+function createUserCard(user) {
   const newCard = document.createElement("article");
   newCard.classList.add("card");
   const infoHolder = document.createElement("div");
@@ -26,7 +20,7 @@ function createUserCard(user){
   humidityP.classList.add("humidity");
   const conditionP = document.createElement("p");
   conditionP.classList.add("condition");
-  
+
   userName.textContent = user.firstName + " " + user.lastName;
   userLocation.textContent = user.location.city + ", " + user.location.country;
   userImage.src = user.userImage;;
@@ -80,9 +74,9 @@ async function initApp() {
   }
 }
 
-async function buildUserInfo(users){
+async function buildUserInfo(users) {
   const completeUsers = await Promise.all(
-    users.map(async user =>{
+    users.map(async user => {
       const withGeoInfo = await api.getGeoInformation(user);
       const withWeatherInfo = await api.getWeather(withGeoInfo);
       return withWeatherInfo;
@@ -99,29 +93,27 @@ async function buildUserInfo(users){
 
 
 async function updateWeatherData() {
-    const cardArray = document.querySelectorAll(".card");
-    const cachedUsers = utils.getCachedData();
-    for (const [i, card] of cardArray.entries()) {
-        const weatherInfoHolder = card.querySelector(".weather-info");
-            try {
-                const {weatherCondition, temperature, humidity} = await api.updateWeatherData(cachedUsers[i].weather.latitude, cachedUsers[i].weather.longitude);
-                cachedUsers[i].weather.condition = weatherCondition;
-                cachedUsers[i].weather.temperature = temperature;
-                cachedUsers[i].weather.humidity = humidity;
+  const cardArray = document.querySelectorAll(".card");
+  const cachedUsers = utils.getCachedData();
+  for (const [i, card] of cardArray.entries()) {
+    const weatherInfoHolder = card.querySelector(".weather-info");
+    try {
+      const { weatherCondition, temperature, humidity } = await api.updateWeatherData(cachedUsers[i].weather.latitude, cachedUsers[i].weather.longitude);
+      cachedUsers[i].weather.condition = weatherCondition;
+      cachedUsers[i].weather.temperature = temperature;
+      cachedUsers[i].weather.humidity = humidity;
 
-                weatherInfoHolder.querySelector(".temp").textContent = "Temp : " + temperature + "°C";
-                weatherInfoHolder.querySelector(".humidity").textContent = "Humidity : " + humidity + "%";
-                weatherInfoHolder.querySelector(".condition").textContent = "Condition : " + weatherCondition;
-                
-            } catch (error) {
-                console.error("Error: " + error.message);
-            }
+      weatherInfoHolder.querySelector(".temp").textContent = "Temp : " + temperature + "°C";
+      weatherInfoHolder.querySelector(".humidity").textContent = "Humidity : " + humidity + "%";
+      weatherInfoHolder.querySelector(".condition").textContent = "Condition : " + weatherCondition;
 
-        }
-    utils.setCachedData(cachedUsers);
+    } catch (error) {
+      console.error("Error: " + error.message);
     }
 
-
+  }
+  utils.setCachedData(cachedUsers);
+}
 
 
 

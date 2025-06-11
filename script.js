@@ -16,7 +16,9 @@ updateWeatherButton.addEventListener("click", () => {
 let isUpdating = false;
 
 setInterval(async () => {
-  if (isUpdating) return;
+  if (isUpdating){
+    return;
+  } 
 
   isUpdating = true;
   try {
@@ -24,6 +26,8 @@ setInterval(async () => {
   } catch (err) {
     console.error("Weather update failed:", err);
   } finally {
-    isUpdating = false;}}, 600000)
+    isUpdating = false;
+  }
+}, 600000)
 
-    dom.initApp();
+dom.initApp();
