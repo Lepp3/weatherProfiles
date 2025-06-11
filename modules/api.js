@@ -33,9 +33,6 @@ async function getWeather(user, maxAttempts = 3, delayMs = 10000) {
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
             const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${user.weather.latitude}&longitude=${user.weather.longitude}&current=weather_code&current=temperature_2m&current=relative_humidity_2m`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
             const result = await response.json();
             user.weather.condition = utils.getWeatherDescription(result.current.weather_code);
             user.weather.temperature = result.current.temperature_2m;
