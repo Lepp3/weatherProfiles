@@ -74,7 +74,7 @@ async function initApp() {
       loader.style.display = "none";
       cardHolder.style.display = "flex";
     } catch (error) {
-      console.log(error);
+      console.log("Initialization error: " + error.message);
     }
 
   }
@@ -100,27 +100,28 @@ async function buildUserInfo(users){
 
 async function updateWeatherData() {
     const cardArray = document.querySelectorAll(".card");
+    const cachedUsers = utils.getCachedData();
     for (const [i, card] of cardArray.entries()) {
-        console.log(card);
         const weatherInfoHolder = card.querySelector(".weather-info");
-        const cachedLocations = JSON.parse(localStorage.getItem("locations"));
-        console.log(cachedLocations);
-        console.log(cachedLocations[i]);
-        if (weatherInfoHolder && cachedLocations && cachedLocations[i]) {
-            const location = cachedLocations[i];
             try {
-                const { weatherCode, temperature, humidity } = await api.getWeather(location.latitude, location.longitude);
-                const weatherDescription = utils.getWeatherDescription(weatherCode);
+                const {weatherCondition, temperature, humidity} = await api.updateWeatherData(cachedUsers[i].weather.latitude, cachedUsers[i].weather.longitude);
+                cachedUsers[i].weather.condition = weatherCondition;
+                cachedUsers[i].weather.temperature = temperature;
+                cachedUsers[i].weather.humidity = humidity;
+
                 weatherInfoHolder.querySelector(".temp").textContent = "Temp : " + temperature + "°C";
                 weatherInfoHolder.querySelector(".humidity").textContent = "Humidity : " + humidity + "%";
-                weatherInfoHolder.querySelector(".condition").textContent = "Condition : " + weatherDescription;
+                weatherInfoHolder.querySelector(".condition").textContent = "Condition : " + weatherCondition;
+                
             } catch (error) {
                 console.error("Error: " + error.message);
             }
 
         }
+    utils.setCachedData(cachedUsers);
     }
-}
+
+
 
 
 

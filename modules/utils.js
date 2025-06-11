@@ -45,7 +45,6 @@ function composeUserObject(user){
         location: {},
         weather: {},
     };
-    console.log(user);
     userObj.firstName = user.name.first;
     userObj.lastName = user.name.last;
     userObj.userImage = user.picture.medium;
