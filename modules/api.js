@@ -25,9 +25,7 @@ async function getGeoInformation(user) {
 
 };
 
-async function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+
 
 async function getWeather(user, maxAttempts = 3, delayMs = 10000) {
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -59,6 +57,10 @@ async function updateWeatherData(latitude, longitude) {
     let temperature = result.current.temperature_2m;
     let humidity = result.current.relative_humidity_2m;
     return { weatherCondition, temperature, humidity };
+}
+
+async function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 

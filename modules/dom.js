@@ -74,16 +74,6 @@ async function initApp() {
   }
 }
 
-async function buildUserInfo(users) {
-  const completeUsers = await Promise.all(
-    users.map(async user => {
-      const withGeoInfo = await api.getGeoInformation(user);
-      const withWeatherInfo = await api.getWeather(withGeoInfo);
-      return withWeatherInfo;
-    })
-  );
-  return completeUsers;
-}
 
 
 
