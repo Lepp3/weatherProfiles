@@ -7,12 +7,9 @@ api for weather based on lat and long + weather codes = https://api.open-meteo.c
 
 
 
-structure
-api calls obj
-{call5,
-    convertLongLang,
-    callWeather,}
+init app > check for localstored data ? yes->storeddata.foreach(drawcard+append to container) no->call 3 apis, structure information, save to localStorage, take from localstorage .foreach(drawcard+append to container);
 
-update cards
-func(id1,2,3,4,5)
-take all cards by id
+update weather > get info from localStorage, queryselectorAll cards > for of (cards and users) > replaceChild new weatherInfoHolder in place of old
+new users > empty localStorage > call 3 apis, structure info, save to local, render + append
+every 10 min update weather
+

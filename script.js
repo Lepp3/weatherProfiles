@@ -5,7 +5,7 @@ import dom from "./modules/dom.js";
 const newUserButton = document.getElementById("refresh-users");
 newUserButton.addEventListener("click", () => {
   localStorage.clear();
-  dom.loadFiveUsers();
+  dom.initApp();
 });
 
 const updateWeatherButton = document.getElementById("refresh-weather");
@@ -26,4 +26,4 @@ setInterval(async () => {
   } finally {
     isUpdating = false;}}, 600000)
 
-    dom.loadFiveUsers();
+    dom.initApp();

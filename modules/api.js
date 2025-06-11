@@ -6,31 +6,35 @@ import utils from './utils.js';
 
    async function getFiveUsers(){
     const request = await fetch('https://randomuser.me/api/?results=5&inc=gender,name,nat,picture,location&noinfo');
-    return request.json();
+    const results = await request.json();
+    let userArr = [];
+    results.results.forEach(user => {
+        userArr.push(utils.composeUserObject(user));
+    });
+    return userArr;
     };
 
 
-    async function getGeoInformation(streetName,streetNumber,zipcode,city,country){
-        const request = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${streetName}+${streetNumber}%2C+${zipcode}+${city}%2C+${country}&key=${API_KEY}`);
+    async function getGeoInformation(user){
+        const request = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${user.location.streetName}+${user.location.streetNumber}%2C+${user.location.zipcode}+${user.location.city}%2C+${user.location.country}&key=${API_KEY}`);
         const result = await request.json();
         const [latitude,longitude] = utils.extractLatAndLong(result.results[0].annotations);
-        return result;
+        user.weather.latitude = latitude;
+        user.weather.longitude = longitude;
+        return user;
 
     };
 
 
-    async function getWeather(latitude,longitude){
-        const request = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=weather_code&current=temperature_2m&current=relative_humidity_2m`);
+    async function getWeather(user){
+        const request = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${user.weather.latitude}&longitude=${user.weather.longitude}&current=weather_code&current=temperature_2m&current=relative_humidity_2m`);
         const result = await request.json();
-        const weatherCode = result.current.weather_code;
-        const temperature = result.current.temperature_2m;
-        const humidity = result.current.relative_humidity_2m;
-        return {
-            weatherCode,
-            temperature,
-            humidity
-        };
-    }
+        user.weather.condition = utils.getWeatherDescription(result.current.weather_code);
+        user.weather.temperature = result.current.temperature_2m;
+        user.weather.humidity = result.current.relative_humidity_2m;
+        return user;
+
+    };
 
 
     export default{

@@ -33,14 +33,6 @@ function getWeatherDescription(code) {
     return codesMap[code] || 'Unknown Weather Code';
 }
 
-function extractLocationInfo(location) {
-    const streetName = location.street.name;
-    const streetNumber = location.street.number;
-    const zipcode = location.postcode;
-    const city = location.city;
-    const country = location.country;
-    return [streetName, streetNumber, zipcode, city, country];
-}
 
 function extractLatAndLong(annotations){
     const latitude = annotations.DMS.lat.split(' ')[2].slice(0,5);
@@ -48,11 +40,37 @@ function extractLatAndLong(annotations){
     return [latitude, longitude];
 }
 
+function composeUserObject(user){
+    let userObj = {
+        location: {},
+        weather: {},
+    };
+    console.log(user);
+    userObj.firstName = user.name.first;
+    userObj.lastName = user.name.last;
+    userObj.userImage = user.picture.medium;
+    userObj.location.streetNumber = user.location.street.number;
+    userObj.location.streetName = user.location.street.name;
+    userObj.location.zipcode = user.location.postcode;
+    userObj.location.city = user.location.city;
+    userObj.location.country = user.location.country;
+    return userObj;
+}
 
+function getCachedData(){
+    const cachedData = localStorage.getItem('users');
+    return cachedData ? JSON.parse(cachedData) : null;
+}
+
+function setCachedData(userInfo){
+    localStorage.setItem('users', JSON.stringify(userInfo));
+}
 
 export default {
     getWeatherDescription,
-    extractLocationInfo,
     extractLatAndLong,
+    getCachedData,
+    setCachedData,
+    composeUserObject
     
 };
