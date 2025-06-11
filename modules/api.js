@@ -65,8 +65,8 @@ async function updateWeatherData(latitude, longitude) {
 export default {
     getFiveUsers,
     getGeoInformation,
-    getWeather
-    , updateWeatherData
+    getWeather,
+    updateWeatherData
 }
 
     
