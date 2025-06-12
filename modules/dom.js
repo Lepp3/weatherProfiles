@@ -21,8 +21,7 @@ export function createUserCard(user) {
   const infoHolder = createHTMLElement("div", "user-info");
   const userName = createHTMLElement("h2", null, `${user.firstName} ${user.lastName}`);
   const userLocation = createHTMLElement("p", null, `${user.location.city}, ${user.location.country}`);
-  const userImage = document.createElement("img");
-  userImage.classList.add("card__img");
+  const userImage = createHTMLElement("img", "card__img");
   userImage.src = user.userImage;
   const weatherInfoHolder = createHTMLElement("div", "weather-info");
   const tempP = createHTMLElement("p", "temp", `Temp : ${user.weather.temperature}°C`);
