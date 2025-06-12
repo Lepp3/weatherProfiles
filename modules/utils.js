@@ -22,6 +22,9 @@ export function getCachedData() {
 }
 
 export function setCachedData(userInfo) {
+    if(userInfo.includes(undefined)){
+        return;
+    }
     localStorage.setItem('users', JSON.stringify(userInfo));
 }
 
