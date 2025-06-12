@@ -21,18 +21,18 @@ function createUserCard(user) {
   const conditionP = document.createElement("p");
   conditionP.classList.add("condition");
 
-  userName.textContent = user.firstName + " " + user.lastName;
-  userLocation.textContent = user.location.city + ", " + user.location.country;
-  userImage.src = user.userImage;;
+  userName.textContent = `${user.firstName}  ${user.lastName}`;
+  userLocation.textContent = `${user.location.city}, ${user.location.country}`;
+  userImage.src = user.userImage;
 
   infoHolder.appendChild(userName);
   infoHolder.appendChild(userLocation);
   newCard.appendChild(userImage);
   newCard.appendChild(infoHolder);
 
-  tempP.textContent = "Temp : " + user.weather.temperature + "°C";
-  humidityP.textContent = "Humidity : " + user.weather.humidity + "%";
-  conditionP.textContent = "Condition : " + user.weather.condition;
+  tempP.textContent = `Temp : ${user.weather.temperature}°C`;
+  humidityP.textContent = `Humidity : ${user.weather.humidity}%`;
+  conditionP.textContent = `Condition : ${user.weather.condition}`;
   weatherInfoHolder.appendChild(tempP);
   weatherInfoHolder.appendChild(humidityP);
   weatherInfoHolder.appendChild(conditionP);
@@ -84,7 +84,7 @@ async function initApp() {
 
 async function updateWeatherData() {
   const cardArray = document.querySelectorAll(".card");
-  const cachedUsers = utils.getCachedData();
+  const cachedUsers = getCachedData();
   for (const [i, card] of cardArray.entries()) {
     const weatherInfoHolder = card.querySelector(".weather-info");
     try {
@@ -93,9 +93,9 @@ async function updateWeatherData() {
       cachedUsers[i].weather.temperature = temperature;
       cachedUsers[i].weather.humidity = humidity;
 
-      weatherInfoHolder.querySelector(".temp").textContent = "Temp : " + temperature + "°C";
-      weatherInfoHolder.querySelector(".humidity").textContent = "Humidity : " + humidity + "%";
-      weatherInfoHolder.querySelector(".condition").textContent = "Condition : " + weatherCondition;
+      weatherInfoHolder.querySelector(".temp").textContent = `Temp : ${temperature}°C`;
+      weatherInfoHolder.querySelector(".humidity").textContent = `Humidity : ${humidity}%`;
+      weatherInfoHolder.querySelector(".condition").textContent = `Condition : ${weatherCondition}`;
 
     } catch (error) {
       console.error("Error: " + error.message);

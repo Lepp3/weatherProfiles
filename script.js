@@ -1,10 +1,11 @@
 import dom from "./modules/dom.js";
+import { clearCachedData } from "./modules/utils.js";
 
 
 
 const newUserButton = document.getElementById("refresh-users");
 newUserButton.addEventListener("click", () => {
-  localStorage.clear();
+  clearCachedData();
   dom.initApp();
 });
 

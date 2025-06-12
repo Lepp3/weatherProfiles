@@ -7,15 +7,7 @@ import { API_KEY } from '../constants.js';
 
 
 
-export async function getGeoInformation(user) {
-    const request = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${user.location.streetName}+${user.location.streetNumber}%2C+${user.location.zipcode}+${user.location.city}%2C+${user.location.country}&key=${API_KEY}`);
-    const result = await request.json();
-    const [latitude, longitude] = extractLatAndLong(result.results[0].annotations);
-    user.weather.latitude = latitude;
-    user.weather.longitude = longitude;
-    return user;
 
-};
 
 
 
