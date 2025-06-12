@@ -97,3 +97,19 @@
     transform: rotate(360deg);
   }
 }
+
+.error{
+  display: none;
+  padding: 20px;
+  margin: 20px auto;
+  border-radius: 5px;
+  font-weight: 500;
+  font-size: 2rem;
+  color: white;
+  background-color: red;
+  width: 200px;
+}
+
+.error-weather{
+  text-align: center;
+}

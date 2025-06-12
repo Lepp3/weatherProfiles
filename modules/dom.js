@@ -23,15 +23,23 @@ export function createUserCard(user) {
   const userLocation = createHTMLElement("p", null, `${user.location.city}, ${user.location.country}`);
   const userImage = createHTMLElement("img", "card__img");
   userImage.src = user.userImage;
+  infoHolder.appendChild(userName);
+  infoHolder.appendChild(userLocation);
+  newCard.appendChild(userImage);
+  newCard.appendChild(infoHolder);
+  if(!user.weather.temperature){
+    const weatherInfoHolder = createHTMLElement("div", "weather-info");
+    const errorMessageP = createHTMLElement("p","error-weather","Weather conditions unavailable at this time.");
+    weatherInfoHolder.appendChild(errorMessageP);
+    newCard.appendChild(weatherInfoHolder);
+    return newCard;
+  }
   const weatherInfoHolder = createHTMLElement("div", "weather-info");
   const tempP = createHTMLElement("p", "temp", `Temp : ${user.weather.temperature}°C`);
   const humidityP = createHTMLElement("p", "humidity", `Humidity : ${user.weather.humidity}%`);
   const conditionP = createHTMLElement("p", "condition", `Condition : ${user.weather.condition}`);
 
-  infoHolder.appendChild(userName);
-  infoHolder.appendChild(userLocation);
-  newCard.appendChild(userImage);
-  newCard.appendChild(infoHolder);
+  
   weatherInfoHolder.appendChild(tempP);
   weatherInfoHolder.appendChild(humidityP);
   weatherInfoHolder.appendChild(conditionP);
@@ -52,6 +60,16 @@ export function toggleContent(isLoading) {
   loader.style.display = isLoading ? "block" : "none";
   mainContent.style.display = isLoading ? "none" : "flex";
 
+}
+
+
+export function showError(){
+  const errorMessage = document.querySelector(".error");
+  const loader = document.querySelector(".loader");
+  const mainContent = document.querySelector(".main--content");
+  mainContent.style.display = "none";
+  loader.style.display = "none";
+  errorMessage.style.display = "block";
 }
 
 export async function updateWeatherInfo() {

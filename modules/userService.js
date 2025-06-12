@@ -16,7 +16,7 @@ export async function getFiveUsers() {
     return userArr;
   } catch (error) {
     console.error("Error fetching users: " + error.message);
-    return [];
+    return;
   }
 
 };

@@ -14,7 +14,7 @@ export async function getWeather(user) {
         return user;
     } catch (error) {
         console.error("Error fetching weather data: " + error.message);
-        return
+        return user
 
     }
 

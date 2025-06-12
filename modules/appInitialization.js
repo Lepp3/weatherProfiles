@@ -1,6 +1,6 @@
 import { getFiveUsers, buildUserInfo } from "./userService.js";
 import { getCachedData, setCachedData } from "./utils.js";
-import { createUserCard, toggleContent } from "./dom.js";
+import { createUserCard, showError, toggleContent } from "./dom.js";
 
 
 export async function initApp() {
@@ -26,6 +26,7 @@ export async function initApp() {
       toggleContent(false);
     } catch (error) {
       console.log("Initialization error: " + error.message);
+      showError();
     }
 
   }

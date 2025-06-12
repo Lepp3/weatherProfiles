@@ -14,6 +14,6 @@ export async function getGeoInformation(user) {
         return user;
     } catch (error) {
         console.error("Error fetching geo information: " + error.message);
-        return
+        return user
     }
 };
