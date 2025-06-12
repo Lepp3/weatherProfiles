@@ -1,6 +1,6 @@
 import { clearCachedData } from "./modules/utils.js";
-import { initApp } from "./modules/appInitialization.js"; 
-import { emptyCardHolder, updateWeatherInfo} from "./modules/dom.js";
+import { initApp } from "./modules/appInitialization.js";
+import { emptyCardHolder, updateWeatherInfo } from "./modules/dom.js";
 
 
 
@@ -21,9 +21,9 @@ updateWeatherButton.addEventListener("click", async () => {
 let isUpdating = false;
 
 setInterval(async () => {
-  if (isUpdating){
+  if (isUpdating) {
     return;
-  } 
+  }
 
   isUpdating = true;
   try {
@@ -35,4 +35,4 @@ setInterval(async () => {
   }
 }, 600000)
 
-initApp();
+await initApp();

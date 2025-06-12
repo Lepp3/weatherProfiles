@@ -1,9 +1,9 @@
-import { codesMap } from "../constants.js";
+import { CODESMAP } from "../constants.js";
 
 
 // string formatting
 export function getWeatherDescription(code) {
-    return codesMap[code] || 'Unknown Weather Code';
+    return CODESMAP[code] || 'Unknown Weather Code';
 }
 
 

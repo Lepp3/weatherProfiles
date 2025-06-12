@@ -1,5 +1,5 @@
 import { getFiveUsers, buildUserInfo } from "./userService.js";
-import { getCachedData,setCachedData } from "./utils.js";
+import { getCachedData, setCachedData } from "./utils.js";
 import { createUserCard, toggleContent } from "./dom.js";
 
 
@@ -13,7 +13,7 @@ export async function initApp() {
       const card = createUserCard(user);
       cardHolder.appendChild(card);
     });
-      toggleContent(false);
+    toggleContent(false);
   } else {
     try {
       const baseUsers = await getFiveUsers();

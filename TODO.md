@@ -1,2 +1,0 @@
-
-better loader component

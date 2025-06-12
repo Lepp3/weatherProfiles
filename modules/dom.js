@@ -40,7 +40,7 @@ export function createUserCard(user) {
 
 }
 
-export function emptyCardHolder(){
+export function emptyCardHolder() {
   const cardHolder = document.querySelector("#card--holder");
   cardHolder.innerHTML = "";
 }
@@ -50,16 +50,14 @@ export function toggleContent(isLoading) {
   const mainContent = document.querySelector(".main--content");
 
   loader.style.display = isLoading ? "block" : "none";
-
-
   mainContent.style.display = isLoading ? "none" : "flex";
 
 }
 
-export async function updateWeatherInfo(){
+export async function updateWeatherInfo() {
   const cardsArr = document.querySelectorAll(".card");
   const cachedUsers = getCachedData();
-  for (let i = 0; i <cardsArr.length; i++){
+  for (let i = 0; i < cardsArr.length; i++) {
     const tempP = cardsArr[i].querySelector(".temp");
     const humidityP = cardsArr[i].querySelector(".humidity");
     const conditionP = cardsArr[i].querySelector(".condition");
