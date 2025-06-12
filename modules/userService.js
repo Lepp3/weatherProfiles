@@ -1,3 +1,8 @@
+import { USER_API_URL } from "../constants.js";
+import { apiFetch } from "./api.js";
+import { composeUserObject } from "./utils.js";
+
+
 export async function buildUserInfo(users) {
   const completeUsers = await Promise.all(
     users.map(async user => {
@@ -24,3 +29,18 @@ export function composeUserObject(user) {
     userObj.location.country = user.location.country;
     return userObj;
 }
+
+export async function getFiveUsers() {
+  try{
+    const results = await apiFetch(USER_API_URL);
+    let userArr = [];
+    results.results.forEach(user => {
+        userArr.push(composeUserObject(user));
+    });
+    return userArr;
+  }catch (error){
+    console.error("Error fetching users: " + error.message);
+    return [];
+  }
+    
+};
