@@ -2,36 +2,37 @@ import { getCachedData, setCachedData } from "./utils.js";
 import { getWeather } from "./weatherService.js";
 
 
+
+
+function createHTMLElement(tag,className,content){
+  const newElement = document.createElement(tag);
+  if(className){
+    newElement.classList.add(className);
+  }
+  if(content){
+    newElement.textContent = content;
+  }
+
+  return newElement;
+}
+
 export function createUserCard(user) {
-  const newCard = document.createElement("article");
-  newCard.classList.add("card");
-  const infoHolder = document.createElement("div");
-  infoHolder.classList.add("user-info");
-  const userName = document.createElement("h2");
-  const userLocation = document.createElement("p");
+  const newCard = createHTMLElement("article", "card");
+  const infoHolder = createHTMLElement("div", "user-info");
+  const userName = createHTMLElement("h2", null, `${user.firstName} ${user.lastName}`);
+  const userLocation = createHTMLElement("p", null, `${user.location.city}, ${user.location.country}`);
   const userImage = document.createElement("img");
   userImage.classList.add("card__img");
-  const weatherInfoHolder = document.createElement("div");
-  weatherInfoHolder.classList.add("weather-info");
-  const tempP = document.createElement("p");
-  tempP.classList.add("temp");
-  const humidityP = document.createElement("p");
-  humidityP.classList.add("humidity");
-  const conditionP = document.createElement("p");
-  conditionP.classList.add("condition");
-
-  userName.textContent = `${user.firstName}  ${user.lastName}`;
-  userLocation.textContent = `${user.location.city}, ${user.location.country}`;
   userImage.src = user.userImage;
+  const weatherInfoHolder = createHTMLElement("div", "weather-info");
+  const tempP = createHTMLElement("p", "temp", `Temp : ${user.weather.temperature}°C`);
+  const humidityP = createHTMLElement("p", "humidity", `Humidity : ${user.weather.humidity}%`);
+  const conditionP = createHTMLElement("p", "condition", `Condition : ${user.weather.condition}`);
 
   infoHolder.appendChild(userName);
   infoHolder.appendChild(userLocation);
   newCard.appendChild(userImage);
   newCard.appendChild(infoHolder);
-
-  tempP.textContent = `Temp : ${user.weather.temperature}°C`;
-  humidityP.textContent = `Humidity : ${user.weather.humidity}%`;
-  conditionP.textContent = `Condition : ${user.weather.condition}`;
   weatherInfoHolder.appendChild(tempP);
   weatherInfoHolder.appendChild(humidityP);
   weatherInfoHolder.appendChild(conditionP);
@@ -70,6 +71,9 @@ export async function updateWeatherInfo() {
   setCachedData(cachedUsers);
 
 }
+
+
+
 
 
 
