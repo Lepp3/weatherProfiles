@@ -1,26 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Random Users and Weather</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-    <div id="card--holder">
-       
-    </div>
-    <div class="button-holder">
-        <button id="refresh-weather" class="action-button"><i class="fa-solid fa-arrows-rotate"></i> Refresh Weather</button>
-        <button id="refresh-users" class="action-button"><i class="fa-solid fa-users"></i> New Users</button>
+    <div class="main--content">
+        <div id="card--holder">
+
+        </div>
+        <div class="button--holder">
+            <button id="refresh-weather" class="action-button"><i class="fa-solid fa-arrows-rotate"></i> Refresh
+                Weather</button>
+            <button id="refresh-users" class="action-button"><i class="fa-solid fa-users"></i> New Users</button>
+        </div>
     </div>
 
-    <div id="loader">Loading...</div>
-    
+
+    <span class="loader"></span>
+
 </body>
 <script src="script.js" type="module"></script>
+
 </html>

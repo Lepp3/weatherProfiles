@@ -1,3 +1,5 @@
+import { codesMap } from "../constants.js";
+
 
 // string formatting
 export function getWeatherDescription(code) {

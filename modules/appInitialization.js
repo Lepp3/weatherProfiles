@@ -1,15 +1,11 @@
 import { getFiveUsers, buildUserInfo } from "./userService.js";
 import { getCachedData,setCachedData } from "./utils.js";
-import { createUserCard } from "./dom.js";
-
+import { createUserCard, toggleContent } from "./dom.js";
 
 
 export async function initApp() {
-  const cardHolder = document.getElementById("card--holder");
-  const loader = document.getElementById("loader");
-  cardHolder.style.display = "none";
-  loader.style.display = "block";
-  cardHolder.innerHTML = "";
+  toggleContent(true);
+  const cardHolder = document.querySelector("#card--holder");
 
   let users = getCachedData();
   if (users) {
@@ -17,8 +13,7 @@ export async function initApp() {
       const card = createUserCard(user);
       cardHolder.appendChild(card);
     });
-    loader.style.display = "none";
-    cardHolder.style.display = "flex";
+      toggleContent(false);
   } else {
     try {
       const baseUsers = await getFiveUsers();
@@ -28,8 +23,7 @@ export async function initApp() {
         const card = createUserCard(user);
         cardHolder.appendChild(card);
       });
-      loader.style.display = "none";
-      cardHolder.style.display = "flex";
+      toggleContent(false);
     } catch (error) {
       console.log("Initialization error: " + error.message);
     }

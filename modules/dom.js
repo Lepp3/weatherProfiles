@@ -1,6 +1,5 @@
-import { getCachedData,setCachedData } from "./utils.js";
-import { updateWeatherData } from "./weatherService.js";
-
+import { getCachedData, setCachedData } from "./utils.js";
+import { getWeather } from "./weatherService.js";
 
 
 export function createUserCard(user) {
@@ -41,28 +40,38 @@ export function createUserCard(user) {
 
 }
 
+export function emptyCardHolder(){
+  const cardHolder = document.querySelector("#card--holder");
+  cardHolder.innerHTML = "";
+}
 
-export async function updateWeatherData() {
-  const cardArray = document.querySelectorAll(".card");
+export function toggleContent(isLoading) {
+  const loader = document.querySelector(".loader");
+  const mainContent = document.querySelector(".main--content");
+
+  loader.style.display = isLoading ? "block" : "none";
+
+
+  mainContent.style.display = isLoading ? "none" : "flex";
+
+}
+
+export async function updateWeatherInfo(){
+  const cardsArr = document.querySelectorAll(".card");
   const cachedUsers = getCachedData();
-  for (const [i, card] of cardArray.entries()) {
-    const weatherInfoHolder = card.querySelector(".weather-info");
-    try {
-      const { weatherCondition, temperature, humidity } = await updateWeatherData(cachedUsers[i].weather.latitude, cachedUsers[i].weather.longitude);
-      cachedUsers[i].weather.condition = weatherCondition;
-      cachedUsers[i].weather.temperature = temperature;
-      cachedUsers[i].weather.humidity = humidity;
-
-      weatherInfoHolder.querySelector(".temp").textContent = `Temp : ${temperature}°C`;
-      weatherInfoHolder.querySelector(".humidity").textContent = `Humidity : ${humidity}%`;
-      weatherInfoHolder.querySelector(".condition").textContent = `Condition : ${weatherCondition}`;
-
-    } catch (error) {
-      console.error("Cannot update weather data: " + error.message);
-      return;
-    }
-
+  for (let i = 0; i <cardsArr.length; i++){
+    const tempP = cardsArr[i].querySelector(".temp");
+    const humidityP = cardsArr[i].querySelector(".humidity");
+    const conditionP = cardsArr[i].querySelector(".condition");
+    const updatedUser = await getWeather(cachedUsers[i]);
+    tempP.textContent = `Temp : ${updatedUser.weather.temperature}°C`;
+    humidityP.textContent = `Humidity : ${updatedUser.weather.humidity}%`;
+    conditionP.textContent = `Condition : ${updatedUser.weather.condition}`;
+    cachedUsers[i] = updatedUser;
   }
   setCachedData(cachedUsers);
+
 }
+
+
 
