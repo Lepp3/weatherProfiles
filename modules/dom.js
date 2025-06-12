@@ -1,9 +1,9 @@
-import api from "./api.js";
-import utils from "./utils.js";
+import { getCachedData,setCachedData } from "./utils.js";
+import { updateWeatherData } from "./weatherService.js";
 
 
 
-function createUserCard(user) {
+export function createUserCard(user) {
   const newCard = document.createElement("article");
   newCard.classList.add("card");
   const infoHolder = document.createElement("div");
@@ -41,54 +41,14 @@ function createUserCard(user) {
 
 }
 
-async function initApp() {
-  const cardHolder = document.getElementById("card--holder");
-  const loader = document.getElementById("loader");
-  cardHolder.style.display = "none";
-  loader.style.display = "block";
-  cardHolder.innerHTML = "";
 
-  let users = utils.getCachedData();
-  if (users) {
-    users.forEach(user => {
-      const card = createUserCard(user);
-      cardHolder.appendChild(card);
-    });
-    loader.style.display = "none";
-    cardHolder.style.display = "flex";
-  } else {
-    try {
-      const baseUsers = await api.getFiveUsers();
-      users = await buildUserInfo(baseUsers);
-      utils.setCachedData(users);
-      users.forEach(user => {
-        const card = createUserCard(user);
-        cardHolder.appendChild(card);
-      });
-      loader.style.display = "none";
-      cardHolder.style.display = "flex";
-    } catch (error) {
-      console.log("Initialization error: " + error.message);
-    }
-
-  }
-}
-
-
-
-
-
-
-
-
-
-async function updateWeatherData() {
+export async function updateWeatherData() {
   const cardArray = document.querySelectorAll(".card");
   const cachedUsers = getCachedData();
   for (const [i, card] of cardArray.entries()) {
     const weatherInfoHolder = card.querySelector(".weather-info");
     try {
-      const { weatherCondition, temperature, humidity } = await api.updateWeatherData(cachedUsers[i].weather.latitude, cachedUsers[i].weather.longitude);
+      const { weatherCondition, temperature, humidity } = await updateWeatherData(cachedUsers[i].weather.latitude, cachedUsers[i].weather.longitude);
       cachedUsers[i].weather.condition = weatherCondition;
       cachedUsers[i].weather.temperature = temperature;
       cachedUsers[i].weather.humidity = humidity;
@@ -98,16 +58,11 @@ async function updateWeatherData() {
       weatherInfoHolder.querySelector(".condition").textContent = `Condition : ${weatherCondition}`;
 
     } catch (error) {
-      console.error("Error: " + error.message);
+      console.error("Cannot update weather data: " + error.message);
+      return;
     }
 
   }
-  utils.setCachedData(cachedUsers);
+  setCachedData(cachedUsers);
 }
 
-
-
-export default {
-  initApp,
-  updateWeatherData
-};
