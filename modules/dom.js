@@ -123,7 +123,9 @@ export function attachListeners() {
   const updateWeatherButton = document.getElementById('refresh-weather');
 
   updateWeatherButton.addEventListener('click', async () => {
+    toggleLoaderAndContent(true);
     await updateWeatherInfo();
+    toggleLoaderAndContent(false);
   });
 }
 
