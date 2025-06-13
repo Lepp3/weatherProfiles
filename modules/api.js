@@ -1,4 +1,4 @@
-export async function apiFetch(url, maxAttempts = 3, delayMs = 5000) {
+export async function apiFetch(url, maxAttempts = 3, delayMs = 1000) {
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       const response = await fetch(url);

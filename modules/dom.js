@@ -121,6 +121,17 @@ async function updateWeatherInfo() {
       cachedUsers[i].weather.latitude,
       cachedUsers[i].weather.longitude
     );
+    if(!condition){
+      const errorMessageP = createHTMLElement(
+      'p',
+      'error-weather',
+      'Weather conditions unavailable at this time.'
+    );
+    const weatherInfoHolder = cardsArr[i].querySelector('.weather-info');
+    cardsArr[i].removeChild(weatherInfoHolder);
+    cardsArr[i].appendChild(errorMessageP);
+    continue;
+    }
     tempP.textContent = `Temp : ${temperature}°C`;
     humidityP.textContent = `Humidity : ${humidity}%`;
     conditionP.textContent = `Condition : ${condition}`;
