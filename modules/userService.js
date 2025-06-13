@@ -60,6 +60,18 @@ export async function buildUserInfo(users) {
 
       const weather = { latitude, longitude, condition, temperature, humidity };
 
+      const isFull = condition && temperature &&  humidity && latitude && longitude;
+
+      if(!isFull){
+        return {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          country: user.country,
+          city: user.city,
+          userImage: user.userImage,
+        }
+      }
+
       const {
         streetName: _,
         streetNumber: __,

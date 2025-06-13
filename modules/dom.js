@@ -31,7 +31,7 @@ export function createUserCard(user) {
   userImage.src = user.userImage;
   infoHolder.append(userName, userLocation);
   newCard.append(userImage, infoHolder);
-  if (!user.weather.temperature) {
+  if (!user.weather?.temperature) {
     const weatherInfoHolder = createHTMLElement('div', 'weather-info');
     const errorMessageP = createHTMLElement(
       'p',
