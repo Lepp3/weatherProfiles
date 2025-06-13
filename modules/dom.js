@@ -14,7 +14,7 @@ function createHTMLElement(tag, className, content) {
   return newElement;
 }
 
- function createUserCard(user) {
+function createUserCard(user) {
   const newCard = createHTMLElement('article', 'card');
   const infoHolder = createHTMLElement('div', 'user-info');
   const userName = createHTMLElement(
@@ -64,12 +64,30 @@ function createHTMLElement(tag, className, content) {
   return newCard;
 }
 
+export async function renderCards() {
+  toggleLoaderAndContent(true);
+  hideErrorElement();
+  const cardHolder = document.querySelector('#card--holder');
+  const userCardsFragment = document.createDocumentFragment();
+  const users = await getUsers();
+  if (users) {
+    users.forEach((user) => {
+      const card = createUserCard(user);
+      userCardsFragment.appendChild(card);
+    });
+    cardHolder.appendChild(userCardsFragment);
+    toggleLoaderAndContent(false);
+  } else {
+    showErrorElement();
+  }
+}
+
 function removeOldCards() {
   const cardHolder = document.querySelector('#card--holder');
   cardHolder.innerHTML = '';
 }
 
-export function toggleLoaderAndContent(isLoading) {
+function toggleLoaderAndContent(isLoading) {
   const loader = document.querySelector('.loader');
   const mainContent = document.querySelector('.main--content');
 
@@ -77,30 +95,32 @@ export function toggleLoaderAndContent(isLoading) {
   mainContent.style.display = isLoading ? 'none' : 'flex';
 }
 
-export function showErrorElement() {
+function showErrorElement() {
   const errorMessage = document.querySelector('.error');
   const loader = document.querySelector('.loader');
   const mainContent = document.querySelector('.main--content');
-  const refreshUsersButton = document.getElementById("refresh-weather");
+  const refreshUsersButton = document.getElementById('refresh-weather');
   refreshUsersButton.disabled = true;
   mainContent.style.display = 'none';
   loader.style.display = 'none';
   errorMessage.style.display = 'block';
-};
+}
 
-function hideErrorElement(){
-  document.querySelector(".error").style.display = "none";
+function hideErrorElement() {
+  document.querySelector('.error').style.display = 'none';
+}
 
-};
-
-export async function updateWeatherInfo() {
+async function updateWeatherInfo() {
   const cardsArr = document.querySelectorAll('.card');
   const cachedUsers = getCachedData('users');
   for (let i = 0; i < cardsArr.length; i++) {
     const tempP = cardsArr[i].querySelector('.temp');
     const humidityP = cardsArr[i].querySelector('.humidity');
     const conditionP = cardsArr[i].querySelector('.condition');
-    const {condition, temperature, humidity } = await getWeather(cachedUsers[i].weather.latitude, cachedUsers[i].weather.longitude);
+    const { condition, temperature, humidity } = await getWeather(
+      cachedUsers[i].weather.latitude,
+      cachedUsers[i].weather.longitude
+    );
     tempP.textContent = `Temp : ${temperature}°C`;
     humidityP.textContent = `Humidity : ${humidity}%`;
     conditionP.textContent = `Condition : ${condition}`;
@@ -127,24 +147,6 @@ export function attachListeners() {
     await updateWeatherInfo();
     toggleLoaderAndContent(false);
   });
-}
-
-export async function renderCards() {
-  toggleLoaderAndContent(true);
-  hideErrorElement();
-  const cardHolder = document.querySelector('#card--holder');
-  const userCardsFragment = document.createDocumentFragment();
-  const users = await getUsers();
-  if (users) {
-    users.forEach((user) => {
-      const card = createUserCard(user);
-      userCardsFragment.appendChild(card);
-    });
-    cardHolder.appendChild(userCardsFragment);
-    toggleLoaderAndContent(false);
-  } else {
-    showErrorElement();
-  }
 }
 
 export async function setUpRefreshWeatherTimer() {
