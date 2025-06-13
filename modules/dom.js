@@ -159,6 +159,9 @@ async function updateWeatherInfo() {
         weatherInfoHolder.removeChild(errorP);
         weatherInfoHolder.append(tempP, humidityP, conditionP);
         cardsArr[i].appendChild(weatherInfoHolder);
+        cachedUsers[i].weather.condition = condition;
+        cachedUsers[i].weather.temperature = temperature;
+        cachedUsers[i].weather.humidity = humidity;
       }
     } else {
       const weatherInfoHolder = createHTMLElement('div', 'weather-info');
