@@ -18,7 +18,7 @@ export async function fetchFiveNewUsers() {
   }
 }
 
-export function composeUserObject(user) {
+function composeUserObject(user) {
   const {
     name: { first: firstName, last: lastName },
     picture: { medium: userImage },
@@ -42,7 +42,7 @@ export function composeUserObject(user) {
   };
 }
 
-export async function buildUserInfo(users) {
+async function buildUserInfo(users) {
   const completeUsers = await Promise.all(
     users.map(async (user) => {
       const { latitude, longitude } = await getGeoInformation(
