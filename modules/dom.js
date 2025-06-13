@@ -1,5 +1,6 @@
 import { getCachedData, setCachedData, clearCachedData } from "./utils.js";
 import { getWeather } from "./weatherService.js";
+import { getFiveUsers,buildUserInfo } from "./userService.js";
 
 
 
@@ -49,7 +50,7 @@ export function removeOldCards() {
   cardHolder.innerHTML = "";
 }
 
-export function toggleContent(isLoading) {
+export function toggleLoaderAndContent(isLoading) {
   const loader = document.querySelector(".loader");
   const mainContent = document.querySelector(".main--content");
 
@@ -92,7 +93,7 @@ export function attachListeners() {
   newUsersButton.addEventListener("click", () => {
     clearCachedData("users");
     removeOldCards();
-    initApp();
+    renderCards();
   });
 
   const updateWeatherButton = document.getElementById("refresh-weather");
@@ -101,6 +102,37 @@ export function attachListeners() {
     await updateWeatherInfo();
   });
 };
+
+export async function renderCards(){
+  toggleLoaderAndContent(true);
+  const cardHolder = document.querySelector("#card--holder");
+  const userCardsFragment = document.createDocumentFragment();
+  let users = getCachedData("users");
+  if (users) {
+    users.forEach(user => {
+      const card = createUserCard(user);
+      userCardsFragment.appendChild(card);
+    });
+    cardHolder.appendChild(userCardsFragment);
+    toggleLoaderAndContent(false);
+  } else {
+    try {
+      const baseUsers = await getFiveUsers();
+      users = await buildUserInfo(baseUsers);
+      setCachedData("users",users);
+      
+      users.forEach(user => {
+        const card = createUserCard(user);
+        userCardsFragment.appendChild(card);
+      });
+      cardHolder.appendChild(userCardsFragment);
+      toggleLoaderAndContent(false);
+    } catch (error) {
+      console.log("Initialization error: " + error.message);
+      showError();
+    }
+  }
+}
 
 export async function setUpRefreshWeatherTimer() {
   let isUpdating = false;

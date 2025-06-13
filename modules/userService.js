@@ -22,7 +22,7 @@ export async function getFiveUsers() {
 };
 
 export function composeUserObject(user) {
-  let userObj = {
+  const userObj = {
     location: {},
     weather: {},
   };
