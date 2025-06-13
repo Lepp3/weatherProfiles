@@ -16,17 +16,17 @@ export function extractLatAndLong(annotations) {
 
 // local storage manipulation
 
-export function getCachedData() {
-    const cachedData = localStorage.getItem('users');
+export function getCachedData(key) {
+    const cachedData = localStorage.getItem(key);
     return cachedData ? JSON.parse(cachedData) : null;
 }
 
-export function setCachedData(userInfo) {
-    localStorage.setItem('users', JSON.stringify(userInfo));
+export function setCachedData(key,data) {
+    localStorage.setItem(key , JSON.stringify(data));
 }
 
-export function clearCachedData() {
-    localStorage.removeItem('users');
+export function clearCachedData(key) {
+    localStorage.removeItem(key);
 }
 
 
