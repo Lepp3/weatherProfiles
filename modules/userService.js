@@ -60,10 +60,22 @@ async function buildUserInfo(users) {
 
       const weather = { latitude, longitude, condition, temperature, humidity };
 
-      const isFull =
-        condition && temperature && humidity && latitude && longitude;
+      const weatherConditions = condition && temperature && humidity;
 
-      if (!isFull) {
+      const geoInfo = latitude && longitude;
+
+      if(!weatherConditions && geoInfo){
+        return{
+          firstName: user.firstName,
+          lastName: user.lastName,
+          country: user.country,
+          city: user.city,
+          userImage: user.userImage,
+          weather
+        }
+      }
+
+      if (!geoInfo && !weatherConditions) {
         return {
           firstName: user.firstName,
           lastName: user.lastName,

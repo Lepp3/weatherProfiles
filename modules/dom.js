@@ -114,30 +114,69 @@ async function updateWeatherInfo() {
   const cardsArr = document.querySelectorAll('.card');
   const cachedUsers = getCachedData('users');
   for (let i = 0; i < cardsArr.length; i++) {
-    const tempP = cardsArr[i].querySelector('.temp');
-    const humidityP = cardsArr[i].querySelector('.humidity');
-    const conditionP = cardsArr[i].querySelector('.condition');
+    const weatherInfoHolder = cardsArr[i].querySelector('.weather-info');
+
     const { condition, temperature, humidity } = await getWeather(
       cachedUsers[i].weather.latitude,
       cachedUsers[i].weather.longitude
     );
-    if(!condition){
+    if (!condition) {
       const errorMessageP = createHTMLElement(
-      'p',
-      'error-weather',
-      'Weather conditions unavailable at this time.'
-    );
-    const weatherInfoHolder = cardsArr[i].querySelector('.weather-info');
-    cardsArr[i].removeChild(weatherInfoHolder);
-    cardsArr[i].appendChild(errorMessageP);
-    continue;
+        'p',
+        'error-weather',
+        'Weather conditions unavailable at this time.'
+      );
+      cardsArr[i].removeChild(weatherInfoHolder);
+      cardsArr[i].appendChild(errorMessageP);
+      const { latitude, longitude } = cachedUsers[i].weather;
+      cachedUsers[i].weather = { latitude, longitude };
+      continue;
     }
-    tempP.textContent = `Temp : ${temperature}°C`;
-    humidityP.textContent = `Humidity : ${humidity}%`;
-    conditionP.textContent = `Condition : ${condition}`;
-    cachedUsers[i].weather.condition = condition;
-    cachedUsers[i].weather.temperature = temperature;
-    cachedUsers[i].weather.humidity = humidity;
+    if (weatherInfoHolder) {
+      const errorP = cardsArr[i].querySelector('.error-weather');
+      if (!errorP) {
+        const tempP = cardsArr[i].querySelector('.temp');
+        const humidityP = cardsArr[i].querySelector('.humidity');
+        const conditionP = cardsArr[i].querySelector('.condition');
+        tempP.textContent = `Temp : ${temperature}°C`;
+        humidityP.textContent = `Humidity : ${humidity}%`;
+        conditionP.textContent = `Condition : ${condition}`;
+        cachedUsers[i].weather.condition = condition;
+        cachedUsers[i].weather.temperature = temperature;
+        cachedUsers[i].weather.humidity = humidity;
+      } else {
+        const tempP = createHTMLElement('p', 'temp', `Temp : ${temperature}°C`);
+        const humidityP = createHTMLElement(
+          'p',
+          'humidity',
+          `Humidity : ${humidity}%`
+        );
+        const conditionP = createHTMLElement(
+          'p',
+          'condition',
+          `Condition : ${condition}`
+        );
+        weatherInfoHolder.removeChild(errorP);
+        weatherInfoHolder.append(tempP, humidityP, conditionP);
+        cardsArr[i].appendChild(weatherInfoHolder);
+      }
+    } else {
+      const weatherInfoHolder = createHTMLElement('div', 'weather-info');
+      const tempP = createHTMLElement('p', 'temp', `Temp : ${temperature}°C`);
+      const humidityP = createHTMLElement(
+        'p',
+        'humidity',
+        `Humidity : ${humidity}%`
+      );
+      const conditionP = createHTMLElement(
+        'p',
+        'condition',
+        `Condition : ${condition}`
+      );
+
+      weatherInfoHolder.append(tempP, humidityP, conditionP);
+      cardsArr[i].appendChild(weatherInfoHolder);
+    }
   }
   setCachedData('users', cachedUsers);
 }
