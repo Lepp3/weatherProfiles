@@ -23,6 +23,6 @@ export async function getGeoInformation(
     return { latitude, longitude };
   } catch (error) {
     console.error('Error fetching geo information: ' + error.message);
-    return {};
+    return null;
   }
 }

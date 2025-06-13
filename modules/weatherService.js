@@ -13,6 +13,6 @@ export async function getWeather(latitude,longitude) {
     return {condition, temperature, humidity};
   } catch (error) {
     console.error('Error fetching weather data: ' + error.message);
-    return {};
+    return null;
   }
 }
