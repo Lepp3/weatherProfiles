@@ -113,6 +113,7 @@ function hideErrorElement() {
 async function updateWeatherInfo() {
   const cardsArr = document.querySelectorAll('.card');
   const cachedUsers = getCachedData('users');
+  toggleLoaderAndContent(true);
   for (let i = 0; i < cardsArr.length; i++) {
     const weatherInfoHolder = cardsArr[i].querySelector('.weather-info');
 
@@ -120,21 +121,22 @@ async function updateWeatherInfo() {
       cachedUsers[i].weather.latitude,
       cachedUsers[i].weather.longitude
     );
+
     if (!condition) {
-      const errorMessageP = createHTMLElement(
+      const errorMessageParagraph = createHTMLElement(
         'p',
         'error-weather',
         'Weather conditions unavailable at this time.'
       );
       cardsArr[i].removeChild(weatherInfoHolder);
-      cardsArr[i].appendChild(errorMessageP);
+      cardsArr[i].appendChild(errorMessageParagraph);
       const { latitude, longitude } = cachedUsers[i].weather;
       cachedUsers[i].weather = { latitude, longitude };
       continue;
     }
     if (weatherInfoHolder) {
-      const errorP = cardsArr[i].querySelector('.error-weather');
-      if (!errorP) {
+      const errorMessageParagraph = cardsArr[i].querySelector('.error-weather');
+      if (!errorMessageParagraph) {
         const tempP = cardsArr[i].querySelector('.temp');
         const humidityP = cardsArr[i].querySelector('.humidity');
         const conditionP = cardsArr[i].querySelector('.condition');
@@ -156,7 +158,7 @@ async function updateWeatherInfo() {
           'condition',
           `Condition : ${condition}`
         );
-        weatherInfoHolder.removeChild(errorP);
+        weatherInfoHolder.removeChild(errorMessageParagraph);
         weatherInfoHolder.append(tempP, humidityP, conditionP);
         cardsArr[i].appendChild(weatherInfoHolder);
         cachedUsers[i].weather.condition = condition;
@@ -182,6 +184,7 @@ async function updateWeatherInfo() {
     }
   }
   setCachedData('users', cachedUsers);
+  toggleLoaderAndContent(false);
 }
 
 export function attachListeners() {
@@ -196,9 +199,7 @@ export function attachListeners() {
   const updateWeatherButton = document.getElementById('refresh-weather');
 
   updateWeatherButton.addEventListener('click', async () => {
-    toggleLoaderAndContent(true);
     await updateWeatherInfo();
-    toggleLoaderAndContent(false);
   });
 }
 
