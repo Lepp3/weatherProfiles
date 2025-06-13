@@ -1,4 +1,4 @@
-import { getCachedData, setCachedData } from "./utils.js";
+import { getCachedData, setCachedData, clearCachedData } from "./utils.js";
 import { getWeather } from "./weatherService.js";
 
 
@@ -23,10 +23,8 @@ export function createUserCard(user) {
   const userLocation = createHTMLElement("p", null, `${user.location.city}, ${user.location.country}`);
   const userImage = createHTMLElement("img", "card__img");
   userImage.src = user.userImage;
-  infoHolder.appendChild(userName);
-  infoHolder.appendChild(userLocation);
-  newCard.appendChild(userImage);
-  newCard.appendChild(infoHolder);
+  infoHolder.append(userName,userLocation);
+  newCard.append(userImage,infoHolder);
   if(!user.weather.temperature){
     const weatherInfoHolder = createHTMLElement("div", "weather-info");
     const errorMessageP = createHTMLElement("p","error-weather","Weather conditions unavailable at this time.");
@@ -40,15 +38,13 @@ export function createUserCard(user) {
   const conditionP = createHTMLElement("p", "condition", `Condition : ${user.weather.condition}`);
 
   
-  weatherInfoHolder.appendChild(tempP);
-  weatherInfoHolder.appendChild(humidityP);
-  weatherInfoHolder.appendChild(conditionP);
+  weatherInfoHolder.append(tempP,humidityP,conditionP);
   newCard.appendChild(weatherInfoHolder);
   return newCard;
 
 }
 
-export function emptyCardHolder() {
+export function removeOldCards() {
   const cardHolder = document.querySelector("#card--holder");
   cardHolder.innerHTML = "";
 }
@@ -74,7 +70,7 @@ export function showError(){
 
 export async function updateWeatherInfo() {
   const cardsArr = document.querySelectorAll(".card");
-  const cachedUsers = getCachedData();
+  const cachedUsers = getCachedData("users");
   for (let i = 0; i < cardsArr.length; i++) {
     const tempP = cardsArr[i].querySelector(".temp");
     const humidityP = cardsArr[i].querySelector(".humidity");
@@ -85,8 +81,44 @@ export async function updateWeatherInfo() {
     conditionP.textContent = `Condition : ${updatedUser.weather.condition}`;
     cachedUsers[i] = updatedUser;
   }
-  setCachedData(cachedUsers);
+  setCachedData("users",cachedUsers);
 
+};
+
+
+export function attachListeners() {
+  const newUsersButton = document.getElementById("refresh-users");
+
+  newUsersButton.addEventListener("click", () => {
+    clearCachedData("users");
+    removeOldCards();
+    initApp();
+  });
+
+  const updateWeatherButton = document.getElementById("refresh-weather");
+
+  updateWeatherButton.addEventListener("click", async () => {
+    await updateWeatherInfo();
+  });
+};
+
+export async function setUpRefreshWeatherTimer() {
+  let isUpdating = false;
+
+  setInterval(async () => {
+    if (isUpdating) {
+      return;
+    }
+
+    isUpdating = true;
+    try {
+      await updateWeatherInfo();
+    } catch (error) {
+      console.error("Weather update failed:" + error.message);
+    } finally {
+      isUpdating = false;
+    }
+  }, 600000)
 }
 
 
