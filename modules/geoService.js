@@ -9,7 +9,7 @@ export async function getGeoInformation(
   city,
   country
 ) {
-  let queryParam = `?q=${streetName}+${streetNumber}%2C+${zipcode}+${city}%2C+${country}&key=${API_KEY}`;
+  const queryParam = `?q=${streetName}+${streetNumber}%2C+${zipcode}+${city}%2C+${country}&key=${API_KEY}`;
   const url = `${GEO_API_URL}${queryParam}`;
   try {
     const result = await apiFetch(url);

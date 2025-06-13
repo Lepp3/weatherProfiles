@@ -2,7 +2,7 @@ export const API_KEY = 'e2677f93e4454538a03b9d349a7c8664';
 export const USER_API_URL =
   'https://randomuser.me/api/?results=5&inc=gender,name,nat,picture,location&noinfo';
 export const GEO_API_URL = 'https://api.opencagedata.com/geocode/v1/json';
-export const WEATHER_API_URL = 'https://api.open-meteo.com/v1/recast';
+export const WEATHER_API_URL = 'https://api.open-meteo.com/v1/forecast';
 export const CODESMAP = {
   0: 'Clear Sky',
   1: 'Mainly Clear',

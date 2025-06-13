@@ -14,7 +14,7 @@ function createHTMLElement(tag, className, content) {
   return newElement;
 }
 
-export function createUserCard(user) {
+ function createUserCard(user) {
   const newCard = createHTMLElement('article', 'card');
   const infoHolder = createHTMLElement('div', 'user-info');
   const userName = createHTMLElement(
@@ -64,7 +64,7 @@ export function createUserCard(user) {
   return newCard;
 }
 
-export function removeOldCards() {
+function removeOldCards() {
   const cardHolder = document.querySelector('#card--holder');
   cardHolder.innerHTML = '';
 }
@@ -77,14 +77,21 @@ export function toggleLoaderAndContent(isLoading) {
   mainContent.style.display = isLoading ? 'none' : 'flex';
 }
 
-export function showError() {
+export function showErrorElement() {
   const errorMessage = document.querySelector('.error');
   const loader = document.querySelector('.loader');
   const mainContent = document.querySelector('.main--content');
+  const refreshUsersButton = document.getElementById("refresh-weather");
+  refreshUsersButton.disabled = true;
   mainContent.style.display = 'none';
   loader.style.display = 'none';
   errorMessage.style.display = 'block';
-}
+};
+
+function hideErrorElement(){
+  document.querySelector(".error").style.display = "none";
+
+};
 
 export async function updateWeatherInfo() {
   const cardsArr = document.querySelectorAll('.card');
@@ -122,6 +129,7 @@ export function attachListeners() {
 
 export async function renderCards() {
   toggleLoaderAndContent(true);
+  hideErrorElement();
   const cardHolder = document.querySelector('#card--holder');
   const userCardsFragment = document.createDocumentFragment();
   const users = await getUsers();
@@ -133,8 +141,7 @@ export async function renderCards() {
     cardHolder.appendChild(userCardsFragment);
     toggleLoaderAndContent(false);
   } else {
-    console.log('Initialization error: ' + error.message);
-    showError();
+    showErrorElement();
   }
 }
 

@@ -7,7 +7,7 @@ import { getWeather } from './weatherService.js';
 export async function fetchFiveNewUsers() {
   try {
     const fetchedUsers = await apiFetch(USER_API_URL);
-    let userArr = [];
+    const userArr = [];
     fetchedUsers.results.forEach((user) => {
       userArr.push(composeUserObject(user));
     });
@@ -60,16 +60,17 @@ export async function buildUserInfo(users) {
 
       const weather = { latitude, longitude, condition, temperature, humidity };
 
-      const isFull = condition && temperature &&  humidity && latitude && longitude;
+      const isFull =
+        condition && temperature && humidity && latitude && longitude;
 
-      if(!isFull){
+      if (!isFull) {
         return {
           firstName: user.firstName,
           lastName: user.lastName,
           country: user.country,
           city: user.city,
           userImage: user.userImage,
-        }
+        };
       }
 
       const {
