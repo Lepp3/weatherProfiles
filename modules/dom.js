@@ -32,36 +32,42 @@ function createUserCard(user) {
   infoHolder.append(userName, userLocation);
   newCard.append(userImage, infoHolder);
   if (!user.weather?.temperature) {
-    const weatherInfoHolder = createHTMLElement('div', 'weather-info');
     const errorMessageP = createHTMLElement(
       'p',
       'error-weather',
       'Weather conditions unavailable at this time.'
     );
-    weatherInfoHolder.appendChild(errorMessageP);
-    newCard.appendChild(weatherInfoHolder);
+    newCard.appendChild(errorMessageP);
     return newCard;
   }
+
+  const weatherInfoHolder = createWeatherInfoHolderAndPopulate(user.weather.temperature, user.weather.humidity,user.weather.condition);
+  
+  newCard.appendChild(weatherInfoHolder);
+  return newCard;
+}
+
+function createWeatherInfoHolderAndPopulate(temperature,humidity,condition){
   const weatherInfoHolder = createHTMLElement('div', 'weather-info');
   const tempP = createHTMLElement(
     'p',
     'temp',
-    `Temp : ${user.weather.temperature}°C`
+    `Temp : ${temperature}°C`
   );
   const humidityP = createHTMLElement(
     'p',
     'humidity',
-    `Humidity : ${user.weather.humidity}%`
+    `Humidity : ${humidity}%`
   );
   const conditionP = createHTMLElement(
     'p',
     'condition',
-    `Condition : ${user.weather.condition}`
+    `Condition : ${condition}`
   );
 
   weatherInfoHolder.append(tempP, humidityP, conditionP);
-  newCard.appendChild(weatherInfoHolder);
-  return newCard;
+  return weatherInfoHolder;
+
 }
 
 export async function renderCards() {
@@ -166,20 +172,9 @@ async function updateWeatherInfo() {
         cachedUsers[i].weather.humidity = humidity;
       }
     } else {
-      const weatherInfoHolder = createHTMLElement('div', 'weather-info');
-      const tempP = createHTMLElement('p', 'temp', `Temp : ${temperature}°C`);
-      const humidityP = createHTMLElement(
-        'p',
-        'humidity',
-        `Humidity : ${humidity}%`
-      );
-      const conditionP = createHTMLElement(
-        'p',
-        'condition',
-        `Condition : ${condition}`
-      );
-
-      weatherInfoHolder.append(tempP, humidityP, conditionP);
+      const errorMessageParagraph = document.querySelector('.error-weather');
+      const weatherInfoHolder = createWeatherInfoHolderAndPopulate(temperature,humidity,condition);
+      cardsArr[i].removeChild(errorMessageParagraph);
       cardsArr[i].appendChild(weatherInfoHolder);
     }
   }
