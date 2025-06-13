@@ -157,7 +157,9 @@ export async function setUpRefreshWeatherTimer() {
 
     isUpdating = true;
     try {
+      toggleLoaderAndContent(true);
       await updateWeatherInfo();
+      toggleLoaderAndContent(false);
     } catch (error) {
       console.error('Weather update failed:' + error.message);
     } finally {
