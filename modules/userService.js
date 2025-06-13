@@ -19,27 +19,58 @@ export async function fetchFiveNewUsers() {
 }
 
 export function composeUserObject(user) {
-  const userObj = {
-    location: {},
-    weather: {},
+  const {
+    name: { first: firstName, last: lastName },
+    picture: { medium: userImage },
+    location: {
+      street: { number: streetNumber, name: streetName },
+      postcode: zipcode,
+      city,
+      country,
+    },
+  } = user;
+
+  return {
+    firstName,
+    lastName,
+    userImage,
+    streetNumber,
+    streetName,
+    zipcode,
+    city,
+    country,
   };
-  userObj.firstName = user.name.first;
-  userObj.lastName = user.name.last;
-  userObj.userImage = user.picture.medium;
-  userObj.location.streetNumber = user.location.street.number;
-  userObj.location.streetName = user.location.street.name;
-  userObj.location.zipcode = user.location.postcode;
-  userObj.location.city = user.location.city;
-  userObj.location.country = user.location.country;
-  return userObj;
 }
 
 export async function buildUserInfo(users) {
   const completeUsers = await Promise.all(
     users.map(async (user) => {
-      const withGeoInfo = await getGeoInformation(user);
-      const withWeatherInfo = await getWeather(withGeoInfo);
-      return withWeatherInfo;
+      const { latitude, longitude } = await getGeoInformation(
+        user.streetName,
+        user.streetNumber,
+        user.zipcode,
+        user.city,
+        user.country
+      );
+
+      const { condition, temperature, humidity } = await getWeather(
+        latitude,
+        longitude
+      );
+
+      const weather = { latitude, longitude, condition, temperature, humidity };
+
+      const {
+        streetName: _,
+        streetNumber: __,
+        zipcode: ___,
+        ...finalUserObject
+      } = user;
+
+      return {
+        ...finalUserObject,
+        weather,
+      };
     })
   );
   return completeUsers;

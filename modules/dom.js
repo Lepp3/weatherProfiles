@@ -25,7 +25,7 @@ export function createUserCard(user) {
   const userLocation = createHTMLElement(
     'p',
     null,
-    `${user.location.city}, ${user.location.country}`
+    `${user.city}, ${user.country}`
   );
   const userImage = createHTMLElement('img', 'card__img');
   userImage.src = user.userImage;
@@ -93,11 +93,13 @@ export async function updateWeatherInfo() {
     const tempP = cardsArr[i].querySelector('.temp');
     const humidityP = cardsArr[i].querySelector('.humidity');
     const conditionP = cardsArr[i].querySelector('.condition');
-    const updatedUser = await getWeather(cachedUsers[i]);
-    tempP.textContent = `Temp : ${updatedUser.weather.temperature}°C`;
-    humidityP.textContent = `Humidity : ${updatedUser.weather.humidity}%`;
-    conditionP.textContent = `Condition : ${updatedUser.weather.condition}`;
-    cachedUsers[i] = updatedUser;
+    const {condition, temperature, humidity } = await getWeather(cachedUsers[i].weather.latitude, cachedUsers[i].weather.longitude);
+    tempP.textContent = `Temp : ${temperature}°C`;
+    humidityP.textContent = `Humidity : ${humidity}%`;
+    conditionP.textContent = `Condition : ${condition}`;
+    cachedUsers[i].weather.condition = condition;
+    cachedUsers[i].weather.temperature = temperature;
+    cachedUsers[i].weather.humidity = humidity;
   }
   setCachedData('users', cachedUsers);
 }

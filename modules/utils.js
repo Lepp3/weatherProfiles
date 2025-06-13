@@ -8,7 +8,7 @@ export function getWeatherDescription(code) {
 export function extractLatAndLong(annotations) {
   const latitude = annotations.DMS.lat.split(' ')[2].slice(0, 5);
   const longitude = annotations.DMS.lng.split(' ')[2].slice(0, 5);
-  return [latitude, longitude];
+  return {latitude, longitude};
 }
 
 // local storage manipulation
