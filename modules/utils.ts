@@ -1,0 +1,28 @@
+import { CODESMAP,WeatherCode,WeatherDescription} from '../constants';
+import { Annotations, LatitudeAndLongitude, User } from './types';
+
+// string formatting
+export function getWeatherDescription(code:WeatherCode):WeatherDescription{
+  return CODESMAP[code] || 'Unknown Weather Code';
+}
+
+export function extractLatAndLong(annotations:Annotations):LatitudeAndLongitude {
+  const latitude = annotations.DMS.lat.split(' ')[2].slice(0, 5);
+  const longitude = annotations.DMS.lng.split(' ')[2].slice(0, 5);
+  return {latitude, longitude};
+}
+
+// local storage manipulation
+
+export function getCachedData(key:string): User[] | null {
+  const cachedData = localStorage.getItem(key);
+  return cachedData ? JSON.parse(cachedData) : null;
+}
+
+export function setCachedData({key, data}:{key:string,data:User[]}): void{
+  localStorage.setItem(key, JSON.stringify(data));
+}
+
+export function clearCachedData(key:string):void {
+  localStorage.removeItem(key);
+}

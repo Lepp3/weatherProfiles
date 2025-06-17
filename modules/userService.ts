@@ -3,18 +3,20 @@ import { apiFetch } from './api.js';
 import { getGeoInformation } from './geoService.js';
 import { getCachedData, setCachedData } from './utils.js';
 import { getWeather } from './weatherService.js';
+import { User } from './types.js';
 
-export async function fetchFiveNewUsers() {
+export async function fetchFiveNewUsers():Promise<User[] | null>{
   try {
     const fetchedUsers = await apiFetch(USER_API_URL);
-    const userArr = [];
+    const userArr: User[] = [];
     fetchedUsers.results.forEach((user) => {
       userArr.push(composeUserObject(user));
     });
     return userArr;
   } catch (error) {
-    console.error('Error fetching users: ' + error.message);
-    return;
+    error instanceof Error ? console.error('Error fetching users: ' + error.message) : console.error('Error fetching users: ' + String(error))
+    ;
+    return null;
   }
 }
 
@@ -101,7 +103,7 @@ async function buildUserInfo(users) {
   return completeUsers;
 }
 
-export async function getUsers() {
+export async function getUsers(): Promise<User[] | null> {
   const cachedUsers = getCachedData('users');
   if (cachedUsers) {
     return cachedUsers;
@@ -109,7 +111,7 @@ export async function getUsers() {
     try {
       const baseUsers = await fetchFiveNewUsers();
       const completeUsers = await buildUserInfo(baseUsers);
-      setCachedData('users', completeUsers);
+      setCachedData({key:'users', data:completeUsers});
       return completeUsers;
     } catch (error) {
       console.warn('Could not fetch new users');
