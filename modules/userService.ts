@@ -3,7 +3,7 @@ import { apiFetch } from './api.js';
 import { getGeoInformation } from './geoService.js';
 import { getCachedData, setCachedData } from './utils.js';
 import { getWeather } from './weatherService.js';
-import { User } from './types.js';
+import { LatitudeAndLongitude, User, WeatherConditions } from './types.js';
 
 export async function fetchFiveNewUsers():Promise<User[] | null>{
   try {
@@ -46,18 +46,18 @@ function composeUserObject(user) {
 
 async function buildUserInfo(users) {
   const completeUsers = await Promise.all(
-    users.map(async (user) => {
-      const { latitude, longitude } = await getGeoInformation(
-        user.streetName,
-        user.streetNumber,
-        user.zipcode,
-        user.city,
-        user.country
+    users.map(async (user:User) => {
+      const geoInfo:LatitudeAndLongitude = await getGeoInformation(
+        {streetName:user.streetName,
+        streetNumber:user.streetNumber,
+        zipcode:user.zipcode,
+        city:user.city,
+        country:user.country}
       );
 
-      const { condition, temperature, humidity } = await getWeather(
-        latitude,
-        longitude
+      const weatherConditions:WeatherConditions = await getWeather(
+        {latitude:latitude,
+        longitude:longitude}
       );
 
       const weather = { latitude, longitude, condition, temperature, humidity };
