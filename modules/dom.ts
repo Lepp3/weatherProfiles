@@ -1,7 +1,8 @@
 import { getCachedData, setCachedData, clearCachedData } from './utils.js';
 import { getWeather } from './weatherService.js';
 import { getUsers } from './userService.js';
-import { User, WeatherConditions } from './types.js';
+import { User } from '../types/userTypes.js';
+import { WeatherConditions } from '../types/weatherTypes.js';
 
 function createHTMLElement({tag, className, content}:{tag:string, className:string | null, content?:string}):HTMLElement {
   const newElement = document.createElement(tag);

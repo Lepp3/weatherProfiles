@@ -3,7 +3,10 @@ import { apiFetch } from './api.js';
 import { getGeoInformation } from './geoService.js';
 import { getCachedData, setCachedData } from './utils.js';
 import { getWeather } from './weatherService.js';
-import { ApiResponseUser, LatitudeAndLongitude, User, WeatherConditions, ApiResponseUserWrapper, BaseUser, Weather } from './types.js';
+import { ApiResponseUser,ApiResponseUserWrapper } from '../types/responseTypes.js';
+import { LatitudeAndLongitude, Weather, WeatherConditions} from '../types/weatherTypes.js';
+import { User, BaseUser } from '../types/userTypes.js';
+
 
 export async function fetchFiveNewUsers():Promise<BaseUser[] | null>{
   try {

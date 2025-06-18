@@ -34,5 +34,4 @@ export const CODESMAP = {
   99: 'Thunderstorm with Heavy Hail',
 } as const;
 
-export type WeatherCode = keyof typeof CODESMAP;
-export type WeatherDescription = typeof CODESMAP[WeatherCode];
+

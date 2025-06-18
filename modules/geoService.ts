@@ -1,7 +1,8 @@
 import { extractLatAndLong } from './utils.js';
 import { API_KEY, GEO_API_URL } from '../constants.js';
 import { apiFetch } from './api.js';
-import { DMSCoordinates, LatitudeAndLongitude } from './types.js';
+import { DMSCoordinates } from '../types/utilityTypes.js';
+import { LatitudeAndLongitude } from '../types/weatherTypes.js';
 
 export async function getGeoInformation({
   streetName,
