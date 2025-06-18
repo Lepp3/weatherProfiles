@@ -3,85 +3,105 @@ import { apiFetch } from './api.js';
 import { getGeoInformation } from './geoService.js';
 import { getCachedData, setCachedData } from './utils.js';
 import { getWeather } from './weatherService.js';
-import { ApiResponseUser,ApiResponseUserWrapper } from '../types/responseTypes.js';
-import { LatitudeAndLongitude, WeatherConditions} from '../types/weatherTypes.js';
+import {
+  ApiResponseUser,
+  ApiResponseUserWrapper,
+} from '../types/responseTypes.js';
+import {
+  LatitudeAndLongitude,
+  WeatherConditions,
+} from '../types/weatherTypes.js';
 import { User, BaseUser } from '../types/userTypes.js';
 
-
-export async function fetchNewUsers({nationality,neededUsers}:{nationality?:string,neededUsers?:number}={}):Promise<BaseUser[] | null>{
+export async function fetchNewUsers({
+  nationality,
+  neededUsers,
+}: { nationality?: string; neededUsers?: number } = {}): Promise<
+  BaseUser[] | null
+> {
   let queryParam = `?results=5&inc=gender,name,nat,picture,location&noinfo`;
-  if(neededUsers && nationality){
-    queryParam = `?results=${neededUsers}&inc=gender,name,picture,location&noinfo&nat=${nationality}`
+  if (neededUsers && nationality) {
+    queryParam = `?results=${neededUsers}&inc=gender,name,picture,location&noinfo&nat=${nationality}`;
   }
   try {
-    const fetchedUsers = await apiFetch<Promise<ApiResponseUserWrapper>>(USER_API_URL + queryParam);
+    const fetchedUsers = await apiFetch<Promise<ApiResponseUserWrapper>>(
+      USER_API_URL + queryParam
+    );
     const userArr: BaseUser[] = [];
-    fetchedUsers.results.forEach((user:ApiResponseUser) => {
-      if(nationality){
-        userArr.push(composeUserObject({user,nationality}));
-      }else{
-        userArr.push(composeUserObject({user}));
+    fetchedUsers.results.forEach((user: ApiResponseUser) => {
+      if (nationality) {
+        userArr.push(composeUserObject({ user, nationality }));
+      } else {
+        userArr.push(composeUserObject({ user }));
       }
     });
     return userArr;
   } catch (error) {
-    error instanceof Error ? console.error('Error fetching users: ' + error.message) : console.error('Error fetching users: ' + String(error))
-    ;
+    error instanceof Error
+      ? console.error('Error fetching users: ' + error.message)
+      : console.error('Error fetching users: ' + String(error));
     return null;
   }
 }
 
-function composeUserObject({user,nationality}:{user:ApiResponseUser,nationality?:string}): BaseUser {
-  if(nationality){
+function composeUserObject({
+  user,
+  nationality,
+}: {
+  user: ApiResponseUser;
+  nationality?: string;
+}): BaseUser {
+  if (nationality) {
     return {
-    firstName:user.name.first,
-    lastName:user.name.last,
-    userImage: user.picture.medium,
-    streetNumber:user.location.street.number as number,
-    streetName: user.location.street.name,
-    zipcode: user.location.postcode,
-    city: user.location.city,
-    country: user.location.country,
-    nationality
-  };
+      firstName: user.name.first,
+      lastName: user.name.last,
+      userImage: user.picture.medium,
+      streetNumber: user.location.street.number as number,
+      streetName: user.location.street.name,
+      zipcode: user.location.postcode,
+      city: user.location.city,
+      country: user.location.country,
+      nationality,
+    };
   }
   return {
-    firstName:user.name.first,
-    lastName:user.name.last,
+    firstName: user.name.first,
+    lastName: user.name.last,
     userImage: user.picture.medium,
-    streetNumber:user.location.street.number as number,
+    streetNumber: user.location.street.number as number,
     streetName: user.location.street.name,
     zipcode: user.location.postcode,
     city: user.location.city,
     country: user.location.country,
-    nationality:user.nat
+    nationality: user.nat,
   };
 }
 
 export async function buildUserInfo(users: BaseUser[]): Promise<User[]> {
   const completeUsers = await Promise.all(
-    users.map(async (user:BaseUser) => {
-      const geoInfo:LatitudeAndLongitude | null = await getGeoInformation(
-        {streetName:user.streetName,
-        streetNumber:user.streetNumber,
-        zipcode:user.zipcode,
-        city:user.city,
-        country:user.country}
-      );
+    users.map(async (user: BaseUser) => {
+      const geoInfo: LatitudeAndLongitude | null = await getGeoInformation({
+        streetName: user.streetName,
+        streetNumber: user.streetNumber,
+        zipcode: user.zipcode,
+        city: user.city,
+        country: user.country,
+      });
 
-      const weatherConditions:WeatherConditions | null = geoInfo ?  await getWeather(geoInfo) : null;
+      const weatherConditions: WeatherConditions | null = geoInfo
+        ? await getWeather(geoInfo)
+        : null;
 
-      if(!weatherConditions && geoInfo){
-        return{
+      if (!weatherConditions && geoInfo) {
+        return {
           firstName: user.firstName,
           lastName: user.lastName,
           country: user.country,
           city: user.city,
           userImage: user.userImage,
-          nationality:user.nationality,
-          coordinates: geoInfo
-          
-        }
+          nationality: user.nationality,
+          coordinates: geoInfo,
+        };
       }
 
       if (!geoInfo && !weatherConditions) {
@@ -91,7 +111,7 @@ export async function buildUserInfo(users: BaseUser[]): Promise<User[]> {
           country: user.country,
           city: user.city,
           userImage: user.userImage,
-          nationality: user.nationality
+          nationality: user.nationality,
         };
       }
 
@@ -104,8 +124,8 @@ export async function buildUserInfo(users: BaseUser[]): Promise<User[]> {
 
       return {
         ...finalUserObject,
-        weather:{...weatherConditions},
-        coordinates:{...geoInfo}
+        weather: { ...weatherConditions },
+        coordinates: { ...geoInfo },
       };
     })
   );
@@ -120,10 +140,10 @@ export async function getUsers(): Promise<User[] | null> {
     try {
       const baseUsers = await fetchNewUsers();
       const completeUsers = baseUsers ? await buildUserInfo(baseUsers) : null;
-      if(!completeUsers){
+      if (!completeUsers) {
         return null;
       }
-      setCachedData({key:'users', data:completeUsers});
+      setCachedData({ key: 'users', data: completeUsers });
       return completeUsers;
     } catch (error) {
       console.warn('Could not fetch new users');

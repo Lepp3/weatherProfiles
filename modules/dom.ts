@@ -4,7 +4,15 @@ import { fetchNewUsers, getUsers, buildUserInfo } from './userService.js';
 import { User } from '../types/userTypes.js';
 import { WeatherConditions } from '../types/weatherTypes.js';
 
-function createHTMLElement({tag, className, content}:{tag:string, className:string | null, content?:string}):HTMLElement {
+function createHTMLElement({
+  tag,
+  className,
+  content,
+}: {
+  tag: string;
+  className: string | null;
+  content?: string;
+}): HTMLElement {
   const newElement = document.createElement(tag);
   if (className) {
     newElement.classList.add(className);
@@ -16,79 +24,101 @@ function createHTMLElement({tag, className, content}:{tag:string, className:stri
   return newElement;
 }
 
-function createUserCard(user:User): HTMLElement {
-  const newCard = createHTMLElement({tag:'article', className:'card'});
-  const infoHolder = createHTMLElement({tag:'div', className:'user-info'});
+function createUserCard(user: User): HTMLElement {
+  const newCard = createHTMLElement({ tag: 'article', className: 'card' });
+  const infoHolder = createHTMLElement({ tag: 'div', className: 'user-info' });
   const userName = createHTMLElement({
-    tag:'h2',
-    className:null,
-    content:`${user.firstName} ${user.lastName}`
+    tag: 'h2',
+    className: null,
+    content: `${user.firstName} ${user.lastName}`,
   });
   const userLocation = createHTMLElement({
-    tag:'p',
-    className:null,
-    content:`${user.city}, ${user.country}`
+    tag: 'p',
+    className: null,
+    content: `${user.city}, ${user.country}`,
   });
-  const userImage = createHTMLElement({tag:'img', className:'card__img'}) as HTMLImageElement;
+  const userImage = createHTMLElement({
+    tag: 'img',
+    className: 'card__img',
+  }) as HTMLImageElement;
   userImage.src = user.userImage;
   infoHolder.append(userName, userLocation);
   newCard.append(userImage, infoHolder);
-  if ((!user.weather?.temperature)
-      || (!user.weather?.humidity)
-      || (!user.weather?.condition)
+  if (
+    !user.weather?.temperature ||
+    !user.weather?.humidity ||
+    !user.weather?.condition
   ) {
     const errorMessageP = createHTMLElement({
-      tag:'p',
-      className:'error-weather',
-      content:'Weather conditions unavailable at this time.'
+      tag: 'p',
+      className: 'error-weather',
+      content: 'Weather conditions unavailable at this time.',
     });
     newCard.appendChild(errorMessageP);
     return newCard;
   }
 
-  const weatherInfoHolder = createWeatherInfoHolderAndPopulate({temperature:user.weather.temperature, humidity:user.weather.humidity,condition:user.weather.condition});
-  const fetchSameNationalityButton = createHTMLElement({tag:'button',className:'action-button',content:'Same nationality'});
+  const weatherInfoHolder = createWeatherInfoHolderAndPopulate({
+    temperature: user.weather.temperature,
+    humidity: user.weather.humidity,
+    condition: user.weather.condition,
+  });
+  const fetchSameNationalityButton = createHTMLElement({
+    tag: 'button',
+    className: 'action-button',
+    content: 'Same nationality',
+  });
   fetchSameNationalityButton.classList.add('nationality-functionality');
-  fetchSameNationalityButton.addEventListener('click',async()=>{
+  fetchSameNationalityButton.addEventListener('click', async () => {
     await modifyCachedUsers(user);
     removeOldCards();
     await renderCards();
-  })
-  newCard.append(weatherInfoHolder,fetchSameNationalityButton);
+  });
+  newCard.append(weatherInfoHolder, fetchSameNationalityButton);
   return newCard;
 }
 
-function createWeatherInfoHolderAndPopulate({temperature,humidity,condition}:{temperature:number,humidity:number,condition:string}):HTMLElement{
-  const weatherInfoHolder = createHTMLElement({tag:'div', className:'weather-info'});
-  const tempP = createHTMLElement(
-    {tag:'p',
-    className:'temp',
-    content:`Temp : ${temperature}°C`}
-  );
-  const humidityP = createHTMLElement({
-    tag:'p',
-    className:'humidity',
-    content:`Humidity : ${humidity}%`
+function createWeatherInfoHolderAndPopulate({
+  temperature,
+  humidity,
+  condition,
+}: {
+  temperature: number;
+  humidity: number;
+  condition: string;
+}): HTMLElement {
+  const weatherInfoHolder = createHTMLElement({
+    tag: 'div',
+    className: 'weather-info',
   });
-  const conditionP = createHTMLElement(
-    {tag:'p',
-    className:'condition',
-    content:`Condition : ${condition}`
+  const tempP = createHTMLElement({
+    tag: 'p',
+    className: 'temp',
+    content: `Temp : ${temperature}°C`,
+  });
+  const humidityP = createHTMLElement({
+    tag: 'p',
+    className: 'humidity',
+    content: `Humidity : ${humidity}%`,
+  });
+  const conditionP = createHTMLElement({
+    tag: 'p',
+    className: 'condition',
+    content: `Condition : ${condition}`,
   });
 
   weatherInfoHolder.append(tempP, humidityP, conditionP);
   return weatherInfoHolder;
-
 }
 
-export async function renderCards():Promise<void> {
+export async function renderCards(): Promise<void> {
   toggleLoaderAndContent(true);
   hideErrorElement();
   const cardHolder = document.querySelector('#card--holder')!;
   const userCardsFragment = document.createDocumentFragment();
   const users = await getUsers();
   if (users) {
-    users.forEach((user:User) => {
+    users.forEach((user: User) => {
       const card = createUserCard(user);
 
       userCardsFragment.appendChild(card);
@@ -100,18 +130,21 @@ export async function renderCards():Promise<void> {
   }
 }
 
-function removeOldCards():void {
+function removeOldCards(): void {
   const cardHolder = document.querySelector('#card--holder')!;
-  while(cardHolder.firstChild){
+  while (cardHolder.firstChild) {
     cardHolder.removeChild(cardHolder.firstChild);
   }
 }
 
-function toggleLoaderAndContent(isLoading:boolean):void {
+function toggleLoaderAndContent(isLoading: boolean): void {
   const loader = document.querySelector('.loader');
   const mainContent = document.querySelector('.main--content');
 
-  if(!(loader instanceof HTMLElement) || !(mainContent instanceof HTMLElement)){
+  if (
+    !(loader instanceof HTMLElement) ||
+    !(mainContent instanceof HTMLElement)
+  ) {
     console.log('One or more DOM elements are missing or incorrect.');
     return;
   }
@@ -120,7 +153,7 @@ function toggleLoaderAndContent(isLoading:boolean):void {
   mainContent.style.display = isLoading ? 'none' : 'flex';
 }
 
-function showErrorElement():void {
+function showErrorElement(): void {
   const errorMessage = document.querySelector('.error');
   const loader = document.querySelector('.loader');
   const mainContent = document.querySelector('.main--content');
@@ -142,9 +175,9 @@ function showErrorElement():void {
   errorMessage.style.display = 'block';
 }
 
-function hideErrorElement():void {
+function hideErrorElement(): void {
   const errorMessage = document.querySelector('.error');
-  if(!(errorMessage instanceof HTMLElement)){
+  if (!(errorMessage instanceof HTMLElement)) {
     console.log('On or more DOM elements are missing or incorrect.');
     return;
   }
@@ -156,28 +189,29 @@ async function updateWeatherInfo() {
   const cachedUsers = getCachedData('users')!;
   toggleLoaderAndContent(true);
   for (let i = 0; i < cardsArr.length; i++) {
-    const weatherInfoHolder = cardsArr[i].querySelector('.weather-info') as HTMLElement;
+    const weatherInfoHolder = cardsArr[i].querySelector(
+      '.weather-info'
+    ) as HTMLElement;
 
-    const weatherConditions: WeatherConditions | null = await getWeather(
-      {latitude:cachedUsers[i].coordinates?.latitude,
-      longitude:cachedUsers[i].coordinates?.longitude}
-    );
+    const weatherConditions: WeatherConditions | null = await getWeather({
+      latitude: cachedUsers[i].coordinates?.latitude,
+      longitude: cachedUsers[i].coordinates?.longitude,
+    });
 
     if (!weatherConditions) {
-      const errorMessageParagraph = createHTMLElement(
-        {tag:'p',
-        className:'error-weather',
-        content:'Weather conditions unavailable at this time.'}
-      );
+      const errorMessageParagraph = createHTMLElement({
+        tag: 'p',
+        className: 'error-weather',
+        content: 'Weather conditions unavailable at this time.',
+      });
       cardsArr[i].removeChild(weatherInfoHolder);
       cardsArr[i].appendChild(errorMessageParagraph);
       const coordinates = cachedUsers[i].coordinates;
-      if(coordinates){
+      if (coordinates) {
         const { latitude, longitude } = coordinates;
         cachedUsers[i]!.coordinates!.latitude = latitude;
-        cachedUsers[i]!.coordinates!.longitude = longitude ;
+        cachedUsers[i]!.coordinates!.longitude = longitude;
       }
-      
 
       continue;
     }
@@ -194,17 +228,21 @@ async function updateWeatherInfo() {
         cachedUsers[i].weather!.temperature = weatherConditions.temperature;
         cachedUsers[i].weather!.humidity = weatherConditions.humidity;
       } else {
-        const tempP = createHTMLElement({tag:'p', className:'temp', content:`Temp : ${weatherConditions.temperature}°C`});
-        const humidityP = createHTMLElement(
-          {tag:'p',
-          className:'humidity',
-          content:`Humidity : ${weatherConditions.humidity}%`}
-        );
-        const conditionP = createHTMLElement(
-          {tag:'p',
-          className:'condition',
-          content:`Condition : ${weatherConditions.condition}`}
-        );
+        const tempP = createHTMLElement({
+          tag: 'p',
+          className: 'temp',
+          content: `Temp : ${weatherConditions.temperature}°C`,
+        });
+        const humidityP = createHTMLElement({
+          tag: 'p',
+          className: 'humidity',
+          content: `Humidity : ${weatherConditions.humidity}%`,
+        });
+        const conditionP = createHTMLElement({
+          tag: 'p',
+          className: 'condition',
+          content: `Condition : ${weatherConditions.condition}`,
+        });
         weatherInfoHolder.removeChild(errorMessageParagraph);
         weatherInfoHolder.append(tempP, humidityP, conditionP);
         cardsArr[i].appendChild(weatherInfoHolder);
@@ -213,67 +251,77 @@ async function updateWeatherInfo() {
         cachedUsers[i].weather!.humidity = weatherConditions.humidity;
       }
     } else {
-      const errorMessageParagraph = document.querySelector('.error-weather') as HTMLElement;
-      const weatherInfoHolder = createWeatherInfoHolderAndPopulate({temperature:weatherConditions.temperature!,humidity:weatherConditions.humidity!,condition:weatherConditions.condition!});
+      const errorMessageParagraph = document.querySelector(
+        '.error-weather'
+      ) as HTMLElement;
+      const weatherInfoHolder = createWeatherInfoHolderAndPopulate({
+        temperature: weatherConditions.temperature!,
+        humidity: weatherConditions.humidity!,
+        condition: weatherConditions.condition!,
+      });
       cardsArr[i].removeChild(errorMessageParagraph);
       cardsArr[i].appendChild(weatherInfoHolder);
     }
   }
-  setCachedData({key:'users', data:cachedUsers});
+  setCachedData({ key: 'users', data: cachedUsers });
   toggleLoaderAndContent(false);
 }
 
 export async function attachListeners(): Promise<void> {
-  const newUsersButton = document.getElementById('refresh-users') as HTMLButtonElement;
+  const newUsersButton = document.getElementById(
+    'refresh-users'
+  ) as HTMLButtonElement;
 
   newUsersButton.addEventListener('click', async () => {
     clearCachedData('users');
     removeOldCards();
     await renderCards();
-    // attachListeners();
   });
 
-  const updateWeatherButton = document.getElementById('refresh-weather') as HTMLButtonElement;
+  const updateWeatherButton = document.getElementById(
+    'refresh-weather'
+  ) as HTMLButtonElement;
 
   updateWeatherButton.addEventListener('click', async () => {
     await updateWeatherInfo();
-    // attachListeners();
   });
-
 }
 
-export async function modifyCachedUsers(user:User): Promise<void> {
+export async function modifyCachedUsers(user: User): Promise<void> {
   toggleLoaderAndContent(true);
   let storedUsers: User[] = getCachedData('users')!;
   const desiredNationality = user.nationality;
   const usersThatMatchCriteria = storedUsers.filter(
-    user => user.nationality === desiredNationality
+    (user) => user.nationality === desiredNationality
   );
   const neededUsers = storedUsers.length - usersThatMatchCriteria.length;
   const replacedIndexes: number[] = [];
   storedUsers.forEach((user, index) => {
-    if(user.nationality !== desiredNationality){
+    if (user.nationality !== desiredNationality) {
       replacedIndexes.push(index);
     }
   });
-  const newBaseUsers = await fetchNewUsers({nationality:desiredNationality, neededUsers});
-  if(!newBaseUsers){
+  const newBaseUsers = await fetchNewUsers({
+    nationality: desiredNationality,
+    neededUsers,
+  });
+  if (!newBaseUsers) {
     return;
   }
   const readyUsers = await buildUserInfo(newBaseUsers);
-  if(!readyUsers){
-    return
+  if (!readyUsers) {
+    return;
   }
-  storedUsers.forEach((user,index)=>{
-    if(replacedIndexes.includes(index)){
+  storedUsers.forEach((user, index) => {
+    if (replacedIndexes.includes(index)) {
       storedUsers[index] = readyUsers.shift()!;
     }
   });
-  setCachedData({key:'users',data:storedUsers as User[]});
+  setCachedData({ key: 'users', data: storedUsers as User[] });
   toggleLoaderAndContent(false);
 }
 
-export async function setUpRefreshWeatherTimer():Promise<void> {
+export async function setUpRefreshWeatherTimer(): Promise<void> {
   let isUpdating = false;
 
   setInterval(async () => {
@@ -287,7 +335,9 @@ export async function setUpRefreshWeatherTimer():Promise<void> {
       await updateWeatherInfo();
       toggleLoaderAndContent(false);
     } catch (error) {
-      error instanceof Error ? console.error('Weather update failed:' + error.message) : console.error(String(error));
+      error instanceof Error
+        ? console.error('Weather update failed:' + error.message)
+        : console.error(String(error));
     } finally {
       isUpdating = false;
     }

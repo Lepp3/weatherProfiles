@@ -8,5 +8,3 @@ export type WeatherConditions = {
     temperature?:number,
     humidity?: number
 }
-
-// export type Weather = LatitudeAndLongitude & WeatherConditions;

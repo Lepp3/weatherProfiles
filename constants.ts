@@ -32,6 +32,6 @@ export const CODESMAP = {
   95: 'Slight or Moderate Thunderstorm',
   96: 'Thunderstorm with Slight Hail',
   99: 'Thunderstorm with Heavy Hail',
-} as const;
+}
 
 
