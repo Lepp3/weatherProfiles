@@ -1,5 +1,5 @@
-import { CODESMAP,WeatherCode,WeatherDescription} from '../constants';
-import { Annotations, LatitudeAndLongitude, User } from './types';
+import { CODESMAP,WeatherCode,WeatherDescription} from '../constants.js';
+import { Annotations, LatitudeAndLongitude, User } from './types.js';
 
 // string formatting
 export function getWeatherDescription(code:WeatherCode):WeatherDescription{

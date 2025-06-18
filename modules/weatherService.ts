@@ -1,7 +1,7 @@
-import { CODESMAP, WEATHER_API_URL } from '../constants';
-import { apiFetch } from './api';
-import { getWeatherDescription } from './utils';
-import { LatitudeAndLongitude, WeatherConditions, WeatherResponseApi } from './types';
+import { CODESMAP, WEATHER_API_URL } from '../constants.js';
+import { apiFetch } from './api.js';
+import { getWeatherDescription } from './utils.js';
+import { LatitudeAndLongitude, WeatherConditions, WeatherResponseApi } from './types.js';
 
 export async function getWeather(geoInfo:LatitudeAndLongitude):Promise<WeatherConditions | null>{
   const queryParam = `?latitude=${geoInfo.latitude}&longitude=${geoInfo.longitude}&current=weather_code&current=temperature_2m&current=relative_humidity_2m`;

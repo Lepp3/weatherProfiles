@@ -3,13 +3,13 @@ import { apiFetch } from './api.js';
 import { getGeoInformation } from './geoService.js';
 import { getCachedData, setCachedData } from './utils.js';
 import { getWeather } from './weatherService.js';
-import { LatitudeAndLongitude, User, WeatherConditions } from './types.js';
+import { ApiResponseUser, LatitudeAndLongitude, User, WeatherConditions, ApiResponseUserWrapper, BaseUser, Weather } from './types.js';
 
-export async function fetchFiveNewUsers():Promise<User[] | null>{
+export async function fetchFiveNewUsers():Promise<BaseUser[] | null>{
   try {
-    const fetchedUsers = await apiFetch(USER_API_URL);
-    const userArr: User[] = [];
-    fetchedUsers.results.forEach((user) => {
+    const fetchedUsers = await apiFetch<Promise<ApiResponseUserWrapper>>(USER_API_URL);
+    const userArr: BaseUser[] = [];
+    fetchedUsers.results.forEach((user:ApiResponseUser) => {
       userArr.push(composeUserObject(user));
     });
     return userArr;
@@ -20,34 +20,23 @@ export async function fetchFiveNewUsers():Promise<User[] | null>{
   }
 }
 
-function composeUserObject(user) {
-  const {
-    name: { first: firstName, last: lastName },
-    picture: { medium: userImage },
-    location: {
-      street: { number: streetNumber, name: streetName },
-      postcode: zipcode,
-      city,
-      country,
-    },
-  } = user;
-
+function composeUserObject(user:ApiResponseUser): BaseUser {
   return {
-    firstName,
-    lastName,
-    userImage,
-    streetNumber,
-    streetName,
-    zipcode,
-    city,
-    country,
+    firstName:user.name.first,
+    lastName:user.name.last,
+    userImage: user.picture.medium,
+    streetNumber:user.location.street.number as number,
+    streetName: user.location.street.name,
+    zipcode: user.location.postcode,
+    city: user.location.city,
+    country: user.location.country,
   };
 }
 
-async function buildUserInfo(users) {
+async function buildUserInfo(users: BaseUser[]): Promise<User[]> {
   const completeUsers = await Promise.all(
-    users.map(async (user:User) => {
-      const geoInfo:LatitudeAndLongitude = await getGeoInformation(
+    users.map(async (user:BaseUser) => {
+      const geoInfo:LatitudeAndLongitude | null = await getGeoInformation(
         {streetName:user.streetName,
         streetNumber:user.streetNumber,
         zipcode:user.zipcode,
@@ -55,16 +44,14 @@ async function buildUserInfo(users) {
         country:user.country}
       );
 
-      const weatherConditions:WeatherConditions = await getWeather(
-        {latitude:latitude,
-        longitude:longitude}
-      );
-
-      const weather = { latitude, longitude, condition, temperature, humidity };
-
-      const weatherConditions = condition && temperature && humidity;
-
-      const geoInfo = latitude && longitude;
+      const weatherConditions:WeatherConditions | null = geoInfo ?  await getWeather(geoInfo) : null;
+      const weather: Weather = {
+        latitude: geoInfo?.latitude,
+        longitude: geoInfo?.longitude,
+        condition: weatherConditions?.condition,
+        temperature: weatherConditions?.temperature,
+        humidity: weatherConditions?.humidity
+      }
 
       if(!weatherConditions && geoInfo){
         return{
@@ -73,7 +60,8 @@ async function buildUserInfo(users) {
           country: user.country,
           city: user.city,
           userImage: user.userImage,
-          weather
+          weather: {...geoInfo}
+          
         }
       }
 
@@ -94,9 +82,10 @@ async function buildUserInfo(users) {
         ...finalUserObject
       } = user;
 
+
       return {
         ...finalUserObject,
-        weather,
+        weather
       };
     })
   );
@@ -110,7 +99,10 @@ export async function getUsers(): Promise<User[] | null> {
   } else {
     try {
       const baseUsers = await fetchFiveNewUsers();
-      const completeUsers = await buildUserInfo(baseUsers);
+      const completeUsers = baseUsers ? await buildUserInfo(baseUsers) : null;
+      if(!completeUsers){
+        return null;
+      }
       setCachedData({key:'users', data:completeUsers});
       return completeUsers;
     } catch (error) {

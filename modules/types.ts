@@ -5,8 +5,38 @@ export type User = {
     userImage:string,
     city:string,
     country:string,
-    weather:Weather
+    weather?:Weather
+}
 
+
+export type BaseUser = Omit<User,"weather"> & {
+  streetName: string,
+  streetNumber: number,
+  zipcode: number,
+}
+
+export type ApiResponseUser = {
+  name: {
+    first: string,
+    last: string,
+  },
+  location: {
+    street:{
+      number: number,
+      name: string
+    },
+    city: string,
+    country: string,
+    postcode: number,
+  },
+  picture: {
+    medium: string,
+  }
+
+}
+
+export type ApiResponseUserWrapper = {
+  results: ApiResponseUser[]
 }
 
 export type LatitudeAndLongitude = {
@@ -15,9 +45,9 @@ export type LatitudeAndLongitude = {
 }
 
 export type WeatherConditions = {
-    condition:string,
-    temperature:number,
-    humidity: number
+    condition?:string,
+    temperature?:number,
+    humidity?: number
 }
 
 export type Weather = LatitudeAndLongitude & WeatherConditions;

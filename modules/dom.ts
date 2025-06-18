@@ -1,7 +1,7 @@
 import { getCachedData, setCachedData, clearCachedData } from './utils.js';
 import { getWeather } from './weatherService.js';
 import { getUsers } from './userService.js';
-import { User, WeatherConditions } from './types';
+import { User, WeatherConditions } from './types.js';
 
 function createHTMLElement({tag, className, content}:{tag:string, className:string | null, content?:string}):HTMLElement {
   const newElement = document.createElement(tag);
@@ -149,8 +149,8 @@ async function updateWeatherInfo() {
     const weatherInfoHolder = cardsArr[i].querySelector('.weather-info') as HTMLElement;
 
     const weatherConditions: WeatherConditions | null = await getWeather(
-      {latitude:cachedUsers[i].weather.latitude,
-      longitude:cachedUsers[i].weather.longitude}
+      {latitude:cachedUsers[i].weather?.latitude,
+      longitude:cachedUsers[i].weather?.longitude}
     );
 
     if (!weatherConditions) {
@@ -161,9 +161,13 @@ async function updateWeatherInfo() {
       );
       cardsArr[i].removeChild(weatherInfoHolder);
       cardsArr[i].appendChild(errorMessageParagraph);
-      const { latitude, longitude } = cachedUsers[i].weather;
-      cachedUsers[i].weather.latitude = latitude;
-      cachedUsers[i].weather.longitude = longitude ;
+      const weather = cachedUsers[i].weather;
+      if(weather){
+        const { latitude, longitude } = weather;
+        cachedUsers[i]!.weather!.latitude = latitude;
+        cachedUsers[i]!.weather!.longitude = longitude ;
+      }
+      
 
       continue;
     }
@@ -176,9 +180,9 @@ async function updateWeatherInfo() {
         tempP.textContent = `Temp : ${weatherConditions.temperature}°C`;
         humidityP.textContent = `Humidity : ${weatherConditions.humidity}%`;
         conditionP.textContent = `Condition : ${weatherConditions.condition}`;
-        cachedUsers[i].weather.condition = weatherConditions.condition;
-        cachedUsers[i].weather.temperature = weatherConditions.temperature;
-        cachedUsers[i].weather.humidity = weatherConditions.humidity;
+        cachedUsers[i].weather!.condition = weatherConditions.condition;
+        cachedUsers[i].weather!.temperature = weatherConditions.temperature;
+        cachedUsers[i].weather!.humidity = weatherConditions.humidity;
       } else {
         const tempP = createHTMLElement({tag:'p', className:'temp', content:`Temp : ${weatherConditions.temperature}°C`});
         const humidityP = createHTMLElement(
@@ -194,13 +198,13 @@ async function updateWeatherInfo() {
         weatherInfoHolder.removeChild(errorMessageParagraph);
         weatherInfoHolder.append(tempP, humidityP, conditionP);
         cardsArr[i].appendChild(weatherInfoHolder);
-        cachedUsers[i].weather.condition = weatherConditions.condition;
-        cachedUsers[i].weather.temperature = weatherConditions.temperature;
-        cachedUsers[i].weather.humidity = weatherConditions.humidity;
+        cachedUsers[i].weather!.condition = weatherConditions.condition;
+        cachedUsers[i].weather!.temperature = weatherConditions.temperature;
+        cachedUsers[i].weather!.humidity = weatherConditions.humidity;
       }
     } else {
       const errorMessageParagraph = document.querySelector('.error-weather') as HTMLElement;
-      const weatherInfoHolder = createWeatherInfoHolderAndPopulate({temperature:weatherConditions.temperature,humidity:weatherConditions.humidity,condition:weatherConditions.condition});
+      const weatherInfoHolder = createWeatherInfoHolderAndPopulate({temperature:weatherConditions.temperature!,humidity:weatherConditions.humidity!,condition:weatherConditions.condition!});
       cardsArr[i].removeChild(errorMessageParagraph);
       cardsArr[i].appendChild(weatherInfoHolder);
     }
@@ -209,7 +213,7 @@ async function updateWeatherInfo() {
   toggleLoaderAndContent(false);
 }
 
-export function attachListeners() {
+export function attachListeners(): void {
   const newUsersButton = document.getElementById('refresh-users') as HTMLButtonElement;
 
   newUsersButton.addEventListener('click', () => {
