@@ -4,16 +4,24 @@ import { getGeoInformation } from './geoService.js';
 import { getCachedData, setCachedData } from './utils.js';
 import { getWeather } from './weatherService.js';
 import { ApiResponseUser,ApiResponseUserWrapper } from '../types/responseTypes.js';
-import { LatitudeAndLongitude, Weather, WeatherConditions} from '../types/weatherTypes.js';
+import { LatitudeAndLongitude, WeatherConditions} from '../types/weatherTypes.js';
 import { User, BaseUser } from '../types/userTypes.js';
 
 
-export async function fetchFiveNewUsers():Promise<BaseUser[] | null>{
+export async function fetchNewUsers({nationality,neededUsers}:{nationality?:string,neededUsers?:number}={}):Promise<BaseUser[] | null>{
+  let queryParam = `?results=5&inc=gender,name,nat,picture,location&noinfo`;
+  if(neededUsers && nationality){
+    queryParam = `?results=${neededUsers}&inc=gender,name,picture,location&noinfo&nat=${nationality}`
+  }
   try {
-    const fetchedUsers = await apiFetch<Promise<ApiResponseUserWrapper>>(USER_API_URL);
+    const fetchedUsers = await apiFetch<Promise<ApiResponseUserWrapper>>(USER_API_URL + queryParam);
     const userArr: BaseUser[] = [];
     fetchedUsers.results.forEach((user:ApiResponseUser) => {
-      userArr.push(composeUserObject(user));
+      if(nationality){
+        userArr.push(composeUserObject({user,nationality}));
+      }else{
+        userArr.push(composeUserObject({user}));
+      }
     });
     return userArr;
   } catch (error) {
@@ -23,7 +31,20 @@ export async function fetchFiveNewUsers():Promise<BaseUser[] | null>{
   }
 }
 
-function composeUserObject(user:ApiResponseUser): BaseUser {
+function composeUserObject({user,nationality}:{user:ApiResponseUser,nationality?:string}): BaseUser {
+  if(nationality){
+    return {
+    firstName:user.name.first,
+    lastName:user.name.last,
+    userImage: user.picture.medium,
+    streetNumber:user.location.street.number as number,
+    streetName: user.location.street.name,
+    zipcode: user.location.postcode,
+    city: user.location.city,
+    country: user.location.country,
+    nationality
+  };
+  }
   return {
     firstName:user.name.first,
     lastName:user.name.last,
@@ -33,10 +54,11 @@ function composeUserObject(user:ApiResponseUser): BaseUser {
     zipcode: user.location.postcode,
     city: user.location.city,
     country: user.location.country,
+    nationality:user.nat
   };
 }
 
-async function buildUserInfo(users: BaseUser[]): Promise<User[]> {
+export async function buildUserInfo(users: BaseUser[]): Promise<User[]> {
   const completeUsers = await Promise.all(
     users.map(async (user:BaseUser) => {
       const geoInfo:LatitudeAndLongitude | null = await getGeoInformation(
@@ -48,13 +70,6 @@ async function buildUserInfo(users: BaseUser[]): Promise<User[]> {
       );
 
       const weatherConditions:WeatherConditions | null = geoInfo ?  await getWeather(geoInfo) : null;
-      const weather: Weather = {
-        latitude: geoInfo?.latitude,
-        longitude: geoInfo?.longitude,
-        condition: weatherConditions?.condition,
-        temperature: weatherConditions?.temperature,
-        humidity: weatherConditions?.humidity
-      }
 
       if(!weatherConditions && geoInfo){
         return{
@@ -63,7 +78,8 @@ async function buildUserInfo(users: BaseUser[]): Promise<User[]> {
           country: user.country,
           city: user.city,
           userImage: user.userImage,
-          weather: {...geoInfo}
+          nationality:user.nationality,
+          coordinates: geoInfo
           
         }
       }
@@ -75,6 +91,7 @@ async function buildUserInfo(users: BaseUser[]): Promise<User[]> {
           country: user.country,
           city: user.city,
           userImage: user.userImage,
+          nationality: user.nationality
         };
       }
 
@@ -85,10 +102,10 @@ async function buildUserInfo(users: BaseUser[]): Promise<User[]> {
         ...finalUserObject
       } = user;
 
-
       return {
         ...finalUserObject,
-        weather
+        weather:{...weatherConditions},
+        coordinates:{...geoInfo}
       };
     })
   );
@@ -101,7 +118,7 @@ export async function getUsers(): Promise<User[] | null> {
     return cachedUsers;
   } else {
     try {
-      const baseUsers = await fetchFiveNewUsers();
+      const baseUsers = await fetchNewUsers();
       const completeUsers = baseUsers ? await buildUserInfo(baseUsers) : null;
       if(!completeUsers){
         return null;

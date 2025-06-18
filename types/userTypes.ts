@@ -1,12 +1,14 @@
-import { Weather } from "./weatherTypes.js"
+import { LatitudeAndLongitude, WeatherConditions } from "./weatherTypes.js"
 
 export type User = {
     firstName:string,
     lastName:string,
     userImage:string,
     city:string,
+    nationality:string,
     country:string,
-    weather?:Weather
+    coordinates?: LatitudeAndLongitude,
+    weather?:WeatherConditions
 }
 
 

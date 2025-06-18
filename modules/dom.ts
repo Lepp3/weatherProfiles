@@ -1,6 +1,6 @@
 import { getCachedData, setCachedData, clearCachedData } from './utils.js';
 import { getWeather } from './weatherService.js';
-import { getUsers } from './userService.js';
+import { fetchNewUsers, getUsers, buildUserInfo } from './userService.js';
 import { User } from '../types/userTypes.js';
 import { WeatherConditions } from '../types/weatherTypes.js';
 
@@ -47,8 +47,14 @@ function createUserCard(user:User): HTMLElement {
   }
 
   const weatherInfoHolder = createWeatherInfoHolderAndPopulate({temperature:user.weather.temperature, humidity:user.weather.humidity,condition:user.weather.condition});
-  
-  newCard.appendChild(weatherInfoHolder);
+  const fetchSameNationalityButton = createHTMLElement({tag:'button',className:'action-button',content:'Same nationality'});
+  fetchSameNationalityButton.classList.add('nationality-functionality');
+  fetchSameNationalityButton.addEventListener('click',async()=>{
+    await modifyCachedUsers(user);
+    removeOldCards();
+    await renderCards();
+  })
+  newCard.append(weatherInfoHolder,fetchSameNationalityButton);
   return newCard;
 }
 
@@ -84,6 +90,7 @@ export async function renderCards():Promise<void> {
   if (users) {
     users.forEach((user:User) => {
       const card = createUserCard(user);
+
       userCardsFragment.appendChild(card);
     });
     cardHolder.appendChild(userCardsFragment);
@@ -95,7 +102,9 @@ export async function renderCards():Promise<void> {
 
 function removeOldCards():void {
   const cardHolder = document.querySelector('#card--holder')!;
-  cardHolder.innerHTML = '';
+  while(cardHolder.firstChild){
+    cardHolder.removeChild(cardHolder.firstChild);
+  }
 }
 
 function toggleLoaderAndContent(isLoading:boolean):void {
@@ -150,8 +159,8 @@ async function updateWeatherInfo() {
     const weatherInfoHolder = cardsArr[i].querySelector('.weather-info') as HTMLElement;
 
     const weatherConditions: WeatherConditions | null = await getWeather(
-      {latitude:cachedUsers[i].weather?.latitude,
-      longitude:cachedUsers[i].weather?.longitude}
+      {latitude:cachedUsers[i].coordinates?.latitude,
+      longitude:cachedUsers[i].coordinates?.longitude}
     );
 
     if (!weatherConditions) {
@@ -162,11 +171,11 @@ async function updateWeatherInfo() {
       );
       cardsArr[i].removeChild(weatherInfoHolder);
       cardsArr[i].appendChild(errorMessageParagraph);
-      const weather = cachedUsers[i].weather;
-      if(weather){
-        const { latitude, longitude } = weather;
-        cachedUsers[i]!.weather!.latitude = latitude;
-        cachedUsers[i]!.weather!.longitude = longitude ;
+      const coordinates = cachedUsers[i].coordinates;
+      if(coordinates){
+        const { latitude, longitude } = coordinates;
+        cachedUsers[i]!.coordinates!.latitude = latitude;
+        cachedUsers[i]!.coordinates!.longitude = longitude ;
       }
       
 
@@ -214,20 +223,54 @@ async function updateWeatherInfo() {
   toggleLoaderAndContent(false);
 }
 
-export function attachListeners(): void {
+export async function attachListeners(): Promise<void> {
   const newUsersButton = document.getElementById('refresh-users') as HTMLButtonElement;
 
-  newUsersButton.addEventListener('click', () => {
+  newUsersButton.addEventListener('click', async () => {
     clearCachedData('users');
     removeOldCards();
-    renderCards();
+    await renderCards();
+    // attachListeners();
   });
 
   const updateWeatherButton = document.getElementById('refresh-weather') as HTMLButtonElement;
 
   updateWeatherButton.addEventListener('click', async () => {
     await updateWeatherInfo();
+    // attachListeners();
   });
+
+}
+
+export async function modifyCachedUsers(user:User): Promise<void> {
+  toggleLoaderAndContent(true);
+  let storedUsers: User[] = getCachedData('users')!;
+  const desiredNationality = user.nationality;
+  const usersThatMatchCriteria = storedUsers.filter(
+    user => user.nationality === desiredNationality
+  );
+  const neededUsers = storedUsers.length - usersThatMatchCriteria.length;
+  const replacedIndexes: number[] = [];
+  storedUsers.forEach((user, index) => {
+    if(user.nationality !== desiredNationality){
+      replacedIndexes.push(index);
+    }
+  });
+  const newBaseUsers = await fetchNewUsers({nationality:desiredNationality, neededUsers});
+  if(!newBaseUsers){
+    return;
+  }
+  const readyUsers = await buildUserInfo(newBaseUsers);
+  if(!readyUsers){
+    return
+  }
+  storedUsers.forEach((user,index)=>{
+    if(replacedIndexes.includes(index)){
+      storedUsers[index] = readyUsers.shift()!;
+    }
+  });
+  setCachedData({key:'users',data:storedUsers as User[]});
+  toggleLoaderAndContent(false);
 }
 
 export async function setUpRefreshWeatherTimer():Promise<void> {

@@ -14,7 +14,8 @@ export type ApiResponseUser = {
   },
   picture: {
     medium: string,
-  }
+  },
+  nat:string
 
 }
 
