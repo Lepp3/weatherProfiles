@@ -1,26 +1,4 @@
-export type ApiResponseUser = {
-  name: {
-    first: string,
-    last: string,
-  },
-  location: {
-    street:{
-      number: number,
-      name: string
-    },
-    city: string,
-    country: string,
-    postcode: number,
-  },
-  picture: {
-    medium: string,
-  },
-  nat:string
-}
 
-export type ApiResponseUserWrapper = {
-  results: ApiResponseUser[]
-}
 
 
 

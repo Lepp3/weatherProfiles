@@ -3,10 +3,7 @@ import { apiFetch } from './api.js';
 import { getGeoInformation } from './geoService.js';
 import { getCachedData, setCachedData } from './utils.js';
 import { getWeather } from './weatherService.js';
-import {
-  ApiResponseUser,
-  ApiResponseUserWrapper,
-} from '../types/responseTypes.js';
+import { type UserApiResponse, UserApiResponseWrapperSchema, type UserApiResponseWrapper } from '../types/apiValidation.js';
 import {
   LatitudeAndLongitude,
   WeatherConditions,
@@ -21,14 +18,18 @@ export async function fetchNewUsers({
 > {
   let queryParam = `?results=5&inc=gender,name,nat,picture,location&noinfo`;
   if (neededUsers && nationality) {
-    queryParam = `?results=${neededUsers}&inc=gender,name,picture,location&noinfo&nat=${nationality}`;
+    queryParam = `?results=${neededUsers}&inc=gender,name,nat,picture,location&noinfo&nat=${nationality}`;
   }
-  try {
-    const fetchedUsers = await apiFetch<Promise<ApiResponseUserWrapper>>(
-      USER_API_URL + queryParam
-    );
+  let rawData;
+  try{ 
+    rawData = await apiFetch(USER_API_URL + queryParam);
+    const fetchedUsers = UserApiResponseWrapperSchema.safeParse(rawData);
+    if(!fetchedUsers.success){
+      console.error(fetchedUsers.error.format());
+      return null
+    }
     const userArr: BaseUser[] = [];
-    fetchedUsers.results.forEach((user: ApiResponseUser) => {
+    fetchedUsers.data.results.forEach((user: UserApiResponse) => {
       if (nationality) {
         userArr.push(composeUserObject({ user, nationality }));
       } else {
@@ -36,7 +37,7 @@ export async function fetchNewUsers({
       }
     });
     return userArr;
-  } catch (error) {
+  }catch(error){
     error instanceof Error
       ? console.error('Error fetching users: ' + error.message)
       : console.error('Error fetching users: ' + String(error));
@@ -48,12 +49,12 @@ function composeUserObject({
   user,
   nationality,
 }: {
-  user: ApiResponseUser;
+  user: UserApiResponse;
   nationality?: string;
 }): BaseUser {
   if (nationality) {
     return {
-      fullName: user.name.first + user.name.last,
+      fullName: `${user.name.first}  ${user.name.last}`,
       image: user.picture.medium,
       city: user.location.city,
       country: user.location.country,
@@ -61,7 +62,7 @@ function composeUserObject({
     };
   }
   return {
-    fullName: user.name.first + user.name.last,
+    fullName: `${user.name.first}  ${user.name.last}`,
     image: user.picture.medium,
     city: user.location.city,
     country: user.location.country,

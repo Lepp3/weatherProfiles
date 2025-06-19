@@ -1,7 +1,7 @@
 import { extractLatAndLong } from './utils.js';
 import { API_KEY, GEO_API_URL } from '../constants.js';
 import { apiFetch } from './api.js';
-import { DMSCoordinates } from '../types/utilityTypes.js';
+import { GeoApiResponseSchema, type GeoApiResponse } from '../types/apiValidation.js';
 import { LatitudeAndLongitude } from '../types/weatherTypes.js';
 
 export async function getGeoInformation({
@@ -15,11 +15,17 @@ export async function getGeoInformation({
     `${city}, ${country}`
   )}&key=${API_KEY}`;
   const url = `${GEO_API_URL}${queryParam}`;
+  let rawData
   try {
-    const result = await apiFetch<DMSCoordinates>(url);
+    rawData = await apiFetch(url);
+    const geoApiResponse = GeoApiResponseSchema.safeParse(rawData);
+    if(!geoApiResponse.success){
+      console.error(geoApiResponse.error.format());
+      return null
+    }
    
     const { latitude, longitude } = extractLatAndLong(
-      result.results[0].annotations
+      geoApiResponse.data.results[0].annotations
     );
 
     

@@ -1,7 +1,8 @@
 import { CODESMAP} from '../constants.js';
-import { WeatherCode, WeatherDescription, Annotations } from '../types/utilityTypes.js';
+import { WeatherCode, WeatherDescription } from '../types/utilityTypes.js';
 import { User } from '../types/userTypes.js';
 import { LatitudeAndLongitude } from '../types/weatherTypes.js';
+import { type Annotations } from '../types/apiValidation.js';
 
 
 // string formatting
