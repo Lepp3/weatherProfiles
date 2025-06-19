@@ -16,7 +16,6 @@ export type ApiResponseUser = {
     medium: string,
   },
   nat:string
-
 }
 
 export type ApiResponseUserWrapper = {

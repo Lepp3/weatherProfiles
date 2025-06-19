@@ -5,20 +5,14 @@ import { DMSCoordinates } from '../types/utilityTypes.js';
 import { LatitudeAndLongitude } from '../types/weatherTypes.js';
 
 export async function getGeoInformation({
-  streetName,
-  streetNumber,
-  zipcode,
   city,
   country}:{
-    streetName:string,
-    streetNumber:number,
-    zipcode:number,
     city:string,
     country:string
   }
 ):Promise<LatitudeAndLongitude | null> {
   const queryParam = `?q=${encodeURIComponent(
-    `${streetName} ${streetNumber}, ${zipcode} ${city}, ${country}`
+    `${city}, ${country}`
   )}&key=${API_KEY}`;
   const url = `${GEO_API_URL}${queryParam}`;
   try {

@@ -53,24 +53,16 @@ function composeUserObject({
 }): BaseUser {
   if (nationality) {
     return {
-      firstName: user.name.first,
-      lastName: user.name.last,
-      userImage: user.picture.medium,
-      streetNumber: user.location.street.number as number,
-      streetName: user.location.street.name,
-      zipcode: user.location.postcode,
+      fullName: user.name.first + user.name.last,
+      image: user.picture.medium,
       city: user.location.city,
       country: user.location.country,
       nationality,
     };
   }
   return {
-    firstName: user.name.first,
-    lastName: user.name.last,
-    userImage: user.picture.medium,
-    streetNumber: user.location.street.number as number,
-    streetName: user.location.street.name,
-    zipcode: user.location.postcode,
+    fullName: user.name.first + user.name.last,
+    image: user.picture.medium,
     city: user.location.city,
     country: user.location.country,
     nationality: user.nat,
@@ -81,9 +73,6 @@ export async function buildUserInfo(users: BaseUser[]): Promise<User[]> {
   const completeUsers = await Promise.all(
     users.map(async (user: BaseUser) => {
       const geoInfo: LatitudeAndLongitude | null = await getGeoInformation({
-        streetName: user.streetName,
-        streetNumber: user.streetNumber,
-        zipcode: user.zipcode,
         city: user.city,
         country: user.country,
       });
@@ -94,11 +83,10 @@ export async function buildUserInfo(users: BaseUser[]): Promise<User[]> {
 
       if (!weatherConditions && geoInfo) {
         return {
-          firstName: user.firstName,
-          lastName: user.lastName,
+          fullName: user.fullName,
           country: user.country,
           city: user.city,
-          userImage: user.userImage,
+          image: user.image,
           nationality: user.nationality,
           coordinates: geoInfo,
         };
@@ -106,19 +94,15 @@ export async function buildUserInfo(users: BaseUser[]): Promise<User[]> {
 
       if (!geoInfo && !weatherConditions) {
         return {
-          firstName: user.firstName,
-          lastName: user.lastName,
+          fullName: user.fullName,
           country: user.country,
           city: user.city,
-          userImage: user.userImage,
+          image: user.image,
           nationality: user.nationality,
         };
       }
 
       const {
-        streetName: _,
-        streetNumber: __,
-        zipcode: ___,
         ...finalUserObject
       } = user;
 

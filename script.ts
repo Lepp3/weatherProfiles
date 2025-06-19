@@ -6,6 +6,6 @@ import {
 
 (async function initApp():Promise<void> {
   await renderCards();
-  await attachListeners();
+  attachListeners();
   await setUpRefreshWeatherTimer();
 })();

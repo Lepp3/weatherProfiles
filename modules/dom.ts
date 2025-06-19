@@ -30,7 +30,7 @@ function createUserCard(user: User): HTMLElement {
   const userName = createHTMLElement({
     tag: 'h2',
     className: null,
-    content: `${user.firstName} ${user.lastName}`,
+    content: `${user.fullName}`,
   });
   const userLocation = createHTMLElement({
     tag: 'p',
@@ -41,7 +41,7 @@ function createUserCard(user: User): HTMLElement {
     tag: 'img',
     className: 'card__img',
   }) as HTMLImageElement;
-  userImage.src = user.userImage;
+  userImage.src = user.image;
   infoHolder.append(userName, userLocation);
   newCard.append(userImage, infoHolder);
   if (
@@ -267,7 +267,7 @@ async function updateWeatherInfo() {
   toggleLoaderAndContent(false);
 }
 
-export async function attachListeners(): Promise<void> {
+export  function attachListeners(): void {
   const newUsersButton = document.getElementById(
     'refresh-users'
   ) as HTMLButtonElement;
