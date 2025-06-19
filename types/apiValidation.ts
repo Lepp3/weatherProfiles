@@ -1,7 +1,6 @@
 // @ts-ignore
 import { z } from 'https://esm.sh/zod';
 
-
 export const UserApiResponseSchema = z.object({
   name: z.object({
     first: z.string(),
@@ -12,19 +11,19 @@ export const UserApiResponseSchema = z.object({
     country: z.string(),
   }),
   picture: z.object({
-    medium: z.string(),
+    medium: z.string().url(),
   }),
   nat: z.string(),
 });
 
 export const UserApiResponseWrapperSchema = z.object({
-    results: z.array(UserApiResponseSchema)
-})
-
+    results: z.array(UserApiResponseSchema, 
+      "Could not validate response"
+    )
+});
 
 export type UserApiResponse = z.infer<typeof UserApiResponseSchema>;
 export type UserApiResponseWrapper = z.infer<typeof UserApiResponseWrapperSchema>;
-
 
 export const WeatherApiResponseSchema = z.object({
   current: z.object({
@@ -33,7 +32,7 @@ export const WeatherApiResponseSchema = z.object({
     weather_code: z.number(),
     temperature_2m: z.number(),
     relative_humidity_2m: z.number()
-  })
+  }, "Could not verify response")
 });
 
 
@@ -46,13 +45,12 @@ export const AnnotationSchema = z.object({
         lat: z.string(),
         lng: z.string()
     })
-    })
-    
+    })   
 });
 
 export const GeoApiResponseSchema = z.object({
     results: z.array(AnnotationSchema)
-});
+},"Could not verify response");
 
 
 export type Annotations = z.infer< typeof AnnotationSchema>;
