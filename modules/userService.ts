@@ -3,7 +3,7 @@ import { apiFetch } from './api.js';
 import { getGeoInformation } from './geoService.js';
 import { getCachedData, setCachedData } from './utils.js';
 import { getWeather } from './weatherService.js';
-import { type UserApiResponse, UserApiResponseWrapperSchema, type UserApiResponseWrapper } from '../types/apiValidation.js';
+import { type UserApiResponse, UserApiResponseWrapperSchema } from '../types/apiValidation.js';
 import {
   LatitudeAndLongitude,
   WeatherConditions,

@@ -1,7 +1,7 @@
 // @ts-ignore
 import { z } from 'https://esm.sh/zod';
 
-export const UserApiResponseSchema = z.object({
+const UserApiResponseSchema = z.object({
   name: z.object({
     first: z.string(),
     last: z.string(),
@@ -23,7 +23,7 @@ export const UserApiResponseWrapperSchema = z.object({
 });
 
 export type UserApiResponse = z.infer<typeof UserApiResponseSchema>;
-export type UserApiResponseWrapper = z.infer<typeof UserApiResponseWrapperSchema>;
+
 
 export const WeatherApiResponseSchema = z.object({
   current: z.object({
