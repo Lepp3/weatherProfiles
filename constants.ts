@@ -1,3 +1,4 @@
+
 export const API_KEY = 'e2677f93e4454538a03b9d349a7c8664';
 export const USER_API_URL =
   'https://randomuser.me/api/?results=5&inc=gender,name,nat,picture,location&noinfo';
@@ -32,6 +33,9 @@ export const CODESMAP = {
   95: 'Slight or Moderate Thunderstorm',
   96: 'Thunderstorm with Slight Hail',
   99: 'Thunderstorm with Heavy Hail',
-}
+};
+
+export const lengthMessageError = (field:string):string => `${field} doesn't meet the required length.`;
+export const validationError = "Failed to validate response";
 
 

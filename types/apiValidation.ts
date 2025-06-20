@@ -1,23 +1,23 @@
 import { z } from 'zod'
+import { lengthMessageError, validationError} from '../constants';
 
 const UserApiResponseSchema = z.object({
   name: z.object({
-    first: z.string().min(1, "Minimum length of first name is one!"),
-    last: z.string(),
+    first: z.string().min(1, lengthMessageError('First Name')),
+    last: z.string().min(1, lengthMessageError('Last Name')),
   }),
   location: z.object({
-    city: z.string(),
-    country: z.string(),
+    city: z.string().min(1, lengthMessageError('City')),
+    country: z.string().min(1, lengthMessageError('Country')),
   }),
   picture: z.object({
-    medium: z.string().url(),
+    medium: z.string().url("Invalid image url provided from API"),
   }),
-  nat: z.string(),
-});
+  nat: z.string().min(1, lengthMessageError('Nationality')),
+},{message:validationError});
 
 export const UserApiResponseWrapperSchema = z.object({
-    results: z.array(UserApiResponseSchema, 
-    )
+    results: z.array(UserApiResponseSchema, {message:validationError})
 });
 
 export type UserApiResponse = z.infer<typeof UserApiResponseSchema>;
@@ -40,15 +40,15 @@ export type WeatherApiResponse = z.infer<typeof WeatherApiResponseSchema>;
 export const AnnotationSchema = z.object({
     annotations: z.object({
         DMS: z.object({
-        lat: z.string(),
-        lng: z.string()
+        lat: z.string().min(1, lengthMessageError('Latitude')),
+        lng: z.string().min(1, lengthMessageError('Longitude'))
     })
     })   
 });
 
 export const GeoApiResponseSchema = z.object({
     results: z.array(AnnotationSchema)
-},);
+},{message:validationError});
 
 
 export type Annotations = z.infer< typeof AnnotationSchema>;
