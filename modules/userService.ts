@@ -103,12 +103,10 @@ export async function buildUserInfo(users: BaseUser[]): Promise<User[]> {
         };
       }
 
-      const {
-        ...finalUserObject
-      } = user;
+     
 
       return {
-        ...finalUserObject,
+        ...user,
         weather: { ...weatherConditions },
         coordinates: { ...geoInfo },
       };
