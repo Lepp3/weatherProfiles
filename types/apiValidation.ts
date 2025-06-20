@@ -1,9 +1,8 @@
-// @ts-ignore
-import { z } from 'https://esm.sh/zod';
+import { z } from 'zod'
 
 const UserApiResponseSchema = z.object({
   name: z.object({
-    first: z.string(),
+    first: z.string().min(1, "Minimum length of first name is one!"),
     last: z.string(),
   }),
   location: z.object({
@@ -18,7 +17,6 @@ const UserApiResponseSchema = z.object({
 
 export const UserApiResponseWrapperSchema = z.object({
     results: z.array(UserApiResponseSchema, 
-      "Could not validate response"
     )
 });
 
@@ -32,7 +30,7 @@ export const WeatherApiResponseSchema = z.object({
     weather_code: z.number(),
     temperature_2m: z.number(),
     relative_humidity_2m: z.number()
-  }, "Could not verify response")
+  },)
 });
 
 
@@ -50,7 +48,7 @@ export const AnnotationSchema = z.object({
 
 export const GeoApiResponseSchema = z.object({
     results: z.array(AnnotationSchema)
-},"Could not verify response");
+},);
 
 
 export type Annotations = z.infer< typeof AnnotationSchema>;

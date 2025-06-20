@@ -1,4 +1,26 @@
 {
+  "name": "weather-profiles",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lepp3/weatherProfiles.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lepp3/weatherProfiles/issues"
+  },
+  "homepage": "https://github.com/Lepp3/weatherProfiles#readme",
+  "description": "",
+  "devDependencies": {
+    "vite": "^6.3.5"
+  },
   "dependencies": {
     "zod": "^3.25.67"
   }

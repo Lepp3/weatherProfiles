@@ -10,9 +10,9 @@ export function getWeatherDescription(code:WeatherCode):WeatherDescription{
   return CODESMAP[code] || 'Unknown Weather Code';
 }
 
-export function extractLatAndLong(annotations:Annotations):LatitudeAndLongitude {
-  const latitude = annotations.DMS.lat.split(' ')[2].slice(0, 5);
-  const longitude = annotations.DMS.lng.split(' ')[2].slice(0, 5);
+export function extractLatAndLong(annotationsObj:Annotations):LatitudeAndLongitude {
+  const latitude = annotationsObj.annotations.DMS.lat.split(' ')[2].slice(0, 5);
+  const longitude = annotationsObj.annotations.DMS.lng.split(' ')[2].slice(0, 5);
   return {latitude, longitude};
 }
 

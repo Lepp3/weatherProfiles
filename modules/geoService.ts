@@ -25,7 +25,7 @@ export async function getGeoInformation({
     }
    
     const { latitude, longitude } = extractLatAndLong(
-      geoApiResponse.data.results[0].annotations
+      geoApiResponse.data.results[0]
     );
 
     
